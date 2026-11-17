@@ -41,6 +41,7 @@ interface PeriodicTableViewProps {
   onChangeTestSubjects: (subjects: QuizSubject[]) => void;
   quizMode: QuizMode;
   onChangeQuizMode: (mode: QuizMode) => void;
+  isMobileLayout?: boolean;
 }
 
 export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
@@ -55,6 +56,7 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
   onChangeTestSubjects,
   quizMode,
   onChangeQuizMode,
+  isMobileLayout = false,
 }) => {
   const t = getTranslations(language);
   const m = getMetallicStrings(language);
@@ -243,21 +245,35 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
     : '';
 
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-5 sm:px-6 space-y-4">
+    <section
+      className={`mx-auto max-w-[1440px] ${
+        isMobileLayout ? 'px-3 py-4 space-y-3' : 'px-6 py-5 space-y-4'
+      }`}
+    >
       {/* Workspace Header & Controls */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div
+        className={`flex gap-4 ${
+          isMobileLayout
+            ? 'flex-col'
+            : 'flex-row items-end justify-between'
+        }`}
+      >
         <div>
-          <h1 className="font-display text-2xl sm:text-[28px] font-semibold tracking-tight text-slate-50 text-balance">
+          <h1
+            className={`font-display font-semibold tracking-tight text-slate-50 text-balance ${
+              isMobileLayout ? 'text-xl' : 'text-[28px]'
+            }`}
+          >
             {t.table.title}
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className={`mt-1 text-slate-400 ${isMobileLayout ? 'text-xs' : 'text-sm'}`}>
             {t.table.subtitle}
           </p>
         </div>
 
         {/* Preset & Search Toolbar */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative">
+          <div className={`relative ${isMobileLayout ? 'w-full' : ''}`}>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
@@ -266,7 +282,9 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               onKeyDown={handleSearchKeyDown}
               placeholder={t.table.findPlaceholder}
               aria-label={t.table.findPlaceholder}
-              className="w-48 rounded-lg border border-slate-800 bg-[#10151E] py-1.5 pl-8 pr-7 text-xs text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
+              className={`rounded-lg border border-slate-800 bg-[#10151E] py-1.5 pl-8 pr-7 text-xs text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none ${
+                isMobileLayout ? 'w-full' : 'w-48'
+              }`}
             />
             {searchQuery && (
               <button
@@ -366,8 +384,16 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
       </div>
 
       {/* Live Element Inspector + Selection Readiness Strip + Inline Flashcard Settings */}
-      <div className="sticky top-16 z-20 flex flex-col gap-3 rounded-xl border border-slate-800/80 bg-[#10151E]/95 backdrop-blur-md px-4 py-3 shadow-lg shadow-black/30">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between min-h-[44px]">
+      <div
+        className={`flex flex-col gap-3 rounded-xl border border-slate-800/80 bg-[#10151E]/95 backdrop-blur-md shadow-lg shadow-black/30 ${
+          isMobileLayout ? 'px-3 py-2.5' : 'sticky top-16 z-20 px-4 py-3'
+        }`}
+      >
+        <div
+          className={`flex gap-3 min-h-[44px] ${
+            isMobileLayout ? 'flex-col' : 'flex-row items-center justify-between'
+          }`}
+        >
           {inspectedElement && inspectedMeta ? (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 min-w-0">
               <div className="flex items-center gap-3 shrink-0">
@@ -412,7 +438,13 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
             <p className="text-xs text-slate-400">{t.table.hoverPrompt}</p>
           )}
 
-          <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end border-t border-slate-800/70 pt-2.5 sm:border-t-0 sm:pt-0">
+          <div
+            className={`flex items-center gap-4 shrink-0 ${
+              isMobileLayout
+                ? 'justify-between border-t border-slate-800/70 pt-2.5'
+                : 'justify-end'
+            }`}
+          >
             <div className="text-xs text-slate-300 tabular-nums">
               <span className="font-mono font-semibold text-cyan-300">
                 {selectedNumbers.size}
@@ -554,10 +586,14 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
       </div>
 
       {/* 18-Column Periodic Table Stage */}
-      <div className="rounded-xl border border-slate-800/80 bg-[#0B0F17] p-3 sm:p-4 overflow-x-auto">
+      <div
+        className={`rounded-xl border border-slate-800/80 bg-[#0B0F17] overflow-x-auto ${
+          isMobileLayout ? 'p-2' : 'p-4'
+        }`}
+      >
         <div
           dir="ltr"
-          className="min-w-[1000px] select-none grid gap-1"
+          className={`select-none grid gap-1 ${isMobileLayout ? 'min-w-[820px]' : 'min-w-[1000px]'}`}
           style={{
             gridTemplateColumns: '22px repeat(18, minmax(0, 1fr))',
             gridTemplateRows: '34px repeat(7, minmax(0, 1fr)) 14px repeat(2, minmax(0, 1fr))',
@@ -752,7 +788,9 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 }}
                 aria-pressed={isSelected}
                 aria-label={`${localizedName}, ${el.symbol}, #${el.number}`}
-                className={`group relative flex flex-col justify-between rounded-md border p-1.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 min-h-[54px] ${
+                className={`group relative flex flex-col justify-between rounded-md border p-1.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  isMobileLayout ? 'min-h-[46px]' : 'min-h-[54px]'
+                } ${
                   isSelected
                     ? 'border-cyan-400 bg-cyan-500/20 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.4)]'
                     : `${meta.tileBg} ${meta.tileBorder} ${meta.tileHoverBorder} ${

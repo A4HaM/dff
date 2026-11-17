@@ -15,6 +15,7 @@ interface ElementIndexViewProps {
   onSelectBatch: (nums: number[], mode: 'add' | 'remove') => void;
   onStartQuiz: () => void;
   language: SupportedLanguage;
+  isMobileLayout?: boolean;
 }
 
 type SortKey = 'number' | 'name' | 'symbol' | 'metallic' | 'period' | 'group';
@@ -25,6 +26,7 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
   onSelectBatch,
   onStartQuiz,
   language,
+  isMobileLayout = false,
 }) => {
   const t = getTranslations(language);
   const m = getMetallicStrings(language);
@@ -99,19 +101,33 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
   };
 
   return (
-    <section className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 space-y-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section
+      className={`mx-auto max-w-[1440px] ${
+        isMobileLayout ? 'px-3 py-4 space-y-4' : 'px-6 py-6 space-y-5'
+      }`}
+    >
+      <div
+        className={`flex gap-4 ${
+          isMobileLayout
+            ? 'flex-col'
+            : 'flex-row items-end justify-between'
+        }`}
+      >
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-slate-50">
+          <h1
+            className={`font-display font-semibold tracking-tight text-slate-50 ${
+              isMobileLayout ? 'text-xl' : 'text-2xl'
+            }`}
+          >
             {t.index.title}
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className={`mt-1 text-slate-400 ${isMobileLayout ? 'text-xs' : 'text-sm'}`}>
             {t.index.subtitle}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
+        <div className={`flex flex-wrap items-center ${isMobileLayout ? 'gap-2' : 'gap-3'}`}>
+          <div className={`relative ${isMobileLayout ? 'w-full' : ''}`}>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <input
               type="text"
@@ -119,7 +135,9 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t.index.searchPlaceholder}
               aria-label={t.index.searchPlaceholder}
-              className="w-56 rounded-lg border border-slate-800 bg-[#10151E] py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none"
+              className={`rounded-lg border border-slate-800 bg-[#10151E] py-2 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none ${
+                isMobileLayout ? 'w-full' : 'w-56'
+              }`}
             />
           </div>
 
@@ -127,7 +145,9 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
             value={metallicFilter}
             onChange={(e) => setMetallicFilter(e.target.value as MetallicType | 'all')}
             aria-label={m.allTypes}
-            className="rounded-lg border border-slate-800 bg-[#10151E] px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none"
+            className={`rounded-lg border border-slate-800 bg-[#10151E] px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none ${
+              isMobileLayout ? 'flex-1 min-w-[140px]' : ''
+            }`}
           >
             <option value="all">{m.allTypes}</option>
             <option value="metal">{m.metals}</option>
@@ -139,7 +159,9 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value as ElementCategory | 'all')}
             aria-label={t.index.colCategory}
-            className="rounded-lg border border-slate-800 bg-[#10151E] px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none"
+            className={`rounded-lg border border-slate-800 bg-[#10151E] px-3 py-2 text-sm text-slate-200 focus:border-cyan-400 focus:outline-none ${
+              isMobileLayout ? 'flex-1 min-w-[140px]' : ''
+            }`}
           >
             <option value="all">{t.index.allCategories}</option>
             {(Object.keys(CATEGORY_META) as ElementCategory[]).map((catKey) => (
@@ -238,8 +260,12 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
                   </button>
                 </th>
                 <th className="px-4 py-3 text-right">{t.index.colMass}</th>
-                <th className="hidden md:table-cell px-4 py-3">{t.index.colConfig}</th>
-                <th className="hidden lg:table-cell px-4 py-3">{t.index.colState}</th>
+                {!isMobileLayout && (
+                  <>
+                    <th className="px-4 py-3">{t.index.colConfig}</th>
+                    <th className="px-4 py-3">{t.index.colState}</th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 text-sm">
@@ -299,12 +325,16 @@ export const ElementIndexView: React.FC<ElementIndexViewProps> = ({
                       <td className="px-4 py-2.5 text-right font-mono text-xs text-slate-300 tabular-nums">
                         {el.atomicMass}
                       </td>
-                      <td className="hidden md:table-cell px-4 py-2.5 font-mono text-xs text-slate-400">
-                        {el.electronConfig}
-                      </td>
-                      <td className="hidden lg:table-cell px-4 py-2.5 text-xs text-slate-400">
-                        {t.states[el.state]}
-                      </td>
+                      {!isMobileLayout && (
+                        <>
+                          <td className="px-4 py-2.5 font-mono text-xs text-slate-400">
+                            {el.electronConfig}
+                          </td>
+                          <td className="px-4 py-2.5 text-xs text-slate-400">
+                            {t.states[el.state]}
+                          </td>
+                        </>
+                      )}
                     </tr>
                   );
                 })

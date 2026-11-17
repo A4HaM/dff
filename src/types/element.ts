@@ -38,6 +38,7 @@ export type CardDirection =
   | 'number-to-symbol';
 export type QuizSubject = 'symbol' | 'name' | 'number';
 export type QuizMode = 'flip' | 'type' | 'choice';
+export type LayoutMode = 'pc' | 'mobile';
 
 export interface FlashcardItem {
   element: ChemicalElement;

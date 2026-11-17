@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronDown, Globe, Search, X } from 'lucide-react';
+import { Check, ChevronDown, Globe, Monitor, Search, Smartphone, X } from 'lucide-react';
+import { getLayoutModeStrings } from '../i18n/metallicTranslations';
 import {
   ALL_LANGUAGES,
   getLanguageMeta,
   getTranslations,
   SupportedLanguage,
 } from '../i18n/translations';
+import { LayoutMode } from '../types/element';
 
 export type AppView = 'table' | 'flashcards' | 'index';
 
@@ -16,6 +18,8 @@ interface TopBarProps {
   onStartQuiz: () => void;
   language: SupportedLanguage;
   onChangeLanguage: (lang: SupportedLanguage) => void;
+  layoutMode: LayoutMode;
+  onToggleLayoutMode: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -25,9 +29,13 @@ export const TopBar: React.FC<TopBarProps> = ({
   onStartQuiz,
   language,
   onChangeLanguage,
+  layoutMode,
+  onToggleLayoutMode,
 }) => {
   const t = getTranslations(language).nav;
+  const layoutText = getLayoutModeStrings(language);
   const activeLangMeta = getLanguageMeta(language);
+  const isMobileLayout = layoutMode === 'mobile';
 
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [langQuery, setLangQuery] = useState('');
@@ -79,45 +87,71 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 border-b border-slate-800/80 bg-[#080B10]/95 backdrop-blur-md">
-      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-4 sm:gap-8 px-4 sm:px-6">
+    <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#080B10]/95 backdrop-blur-md">
+      <div
+        className={`mx-auto flex max-w-[1440px] items-center justify-between ${
+          isMobileLayout ? 'h-12 gap-2 px-3' : 'h-16 gap-8 px-6'
+        }`}
+      >
         {/* Zone 1: Single-line Brand Wordmark */}
         <button
           type="button"
           onClick={() => onChangeView('table')}
-          className="font-display text-lg font-bold tracking-tight text-slate-50 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded"
+          className={`font-display font-bold tracking-tight text-slate-50 whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded ${
+            isMobileLayout ? 'text-base' : 'text-lg'
+          }`}
         >
           Elementa
         </button>
 
-        {/* Zone 2: Concise single-line navigation links */}
-        <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium" aria-label="Primary navigation">
-          <button
-            type="button"
-            onClick={() => onChangeView('table')}
-            className={`whitespace-nowrap shrink-0 py-1 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
-              activeView === 'table'
-                ? 'border-cyan-400 text-slate-50'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t.periodicTable}
-          </button>
-          <button
-            type="button"
-            onClick={() => onChangeView('index')}
-            className={`hidden md:inline-block whitespace-nowrap shrink-0 py-1 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
-              activeView === 'index'
-                ? 'border-cyan-400 text-slate-50'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t.elementIndex}
-          </button>
-        </nav>
+        {/* Zone 2: Concise single-line navigation links (PC row) */}
+        {!isMobileLayout && (
+          <nav className="flex items-center gap-6 text-sm font-medium" aria-label="Primary navigation">
+            <button
+              type="button"
+              onClick={() => onChangeView('table')}
+              className={`whitespace-nowrap shrink-0 py-1 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
+                activeView === 'table'
+                  ? 'border-cyan-400 text-slate-50'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {t.periodicTable}
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeView('index')}
+              className={`whitespace-nowrap shrink-0 py-1 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
+                activeView === 'index'
+                  ? 'border-cyan-400 text-slate-50'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {t.elementIndex}
+            </button>
+          </nav>
+        )}
 
-        {/* Zone 3: Searchable Language Picker + Primary CTA */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Zone 3: PC/Mobile Mode Switcher + Language Picker + Primary CTA */}
+        <div className={`flex items-center shrink-0 ${isMobileLayout ? 'gap-1.5' : 'gap-2.5'}`}>
+          <button
+            type="button"
+            onClick={onToggleLayoutMode}
+            aria-pressed={isMobileLayout}
+            aria-label={isMobileLayout ? layoutText.switchToPc : layoutText.switchToMobile}
+            title={isMobileLayout ? layoutText.switchToPc : layoutText.switchToMobile}
+            className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#10151E] text-xs font-medium text-slate-200 hover:border-cyan-400/50 hover:bg-[#161D2A] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+              isMobileLayout ? 'px-2 py-1.5' : 'px-2.5 py-2'
+            }`}
+          >
+            {isMobileLayout ? (
+              <Smartphone className="h-3.5 w-3.5 text-cyan-300 shrink-0" aria-hidden="true" />
+            ) : (
+              <Monitor className="h-3.5 w-3.5 text-cyan-300 shrink-0" aria-hidden="true" />
+            )}
+            <span>{isMobileLayout ? layoutText.mobile : layoutText.pc}</span>
+          </button>
+
           <div className="relative" ref={dropdownRef}>
             <button
               type="button"
@@ -125,10 +159,14 @@ export const TopBar: React.FC<TopBarProps> = ({
               aria-haspopup="listbox"
               aria-expanded={isLangOpen}
               aria-label={t.languageLabel}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-800 bg-[#10151E] px-3 py-2 text-xs font-medium text-slate-200 hover:border-slate-700 hover:bg-[#161D2A] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+              className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#10151E] text-xs font-medium text-slate-200 hover:border-slate-700 hover:bg-[#161D2A] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isMobileLayout ? 'px-2 py-1.5' : 'px-3 py-2 gap-2'
+              }`}
             >
               <Globe className="h-3.5 w-3.5 text-slate-400 shrink-0" aria-hidden="true" />
-              <span className="max-w-[110px] truncate">{activeLangMeta.nativeName}</span>
+              <span className={`${isMobileLayout ? 'max-w-[58px]' : 'max-w-[110px]'} truncate`}>
+                {activeLangMeta.nativeName}
+              </span>
               <ChevronDown
                 className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-150 shrink-0 ${
                   isLangOpen ? 'rotate-180' : ''
@@ -140,7 +178,9 @@ export const TopBar: React.FC<TopBarProps> = ({
             {isLangOpen && (
               <div
                 dir="ltr"
-                className="absolute right-0 mt-2 w-72 sm:w-80 rounded-xl border border-slate-700/80 bg-[#10151E] shadow-2xl overflow-hidden z-50"
+                className={`absolute right-0 mt-2 rounded-xl border border-slate-700/80 bg-[#10151E] shadow-2xl overflow-hidden z-50 ${
+                  isMobileLayout ? 'w-[calc(100vw-24px)] max-w-[360px]' : 'w-80'
+                }`}
               >
                 {/* Search Input Inside Language Popover */}
                 <div className="border-b border-slate-800/80 p-2.5">
@@ -227,7 +267,9 @@ export const TopBar: React.FC<TopBarProps> = ({
             <button
               type="button"
               onClick={() => onChangeView('table')}
-              className="px-4 py-2 text-xs font-semibold text-slate-100 bg-[#161D2A] border border-slate-700/80 rounded-lg hover:bg-slate-800 hover:border-slate-600 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+              className={`text-xs font-semibold text-slate-100 bg-[#161D2A] border border-slate-700/80 rounded-lg hover:bg-slate-800 hover:border-slate-600 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isMobileLayout ? 'px-2.5 py-1.5' : 'px-4 py-2'
+              }`}
             >
               {t.editSelection}
             </button>
@@ -235,13 +277,46 @@ export const TopBar: React.FC<TopBarProps> = ({
             <button
               type="button"
               onClick={onStartQuiz}
-              className="px-4 py-2 text-xs font-semibold text-slate-950 bg-cyan-400 rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080B10]"
+              className={`text-xs font-semibold text-slate-950 bg-cyan-400 rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080B10] ${
+                isMobileLayout ? 'px-2.5 py-1.5' : 'px-4 py-2'
+              }`}
             >
               {selectedCount > 0 ? t.startFlashcardsCount(selectedCount) : t.startFlashcards}
             </button>
           )}
         </div>
       </div>
+
+      {/* Mobile Navigation Row */}
+      {isMobileLayout && (
+        <nav
+          className="flex items-center gap-5 border-t border-slate-800/60 px-3 py-1.5 text-xs font-medium"
+          aria-label="Primary navigation"
+        >
+          <button
+            type="button"
+            onClick={() => onChangeView('table')}
+            className={`whitespace-nowrap shrink-0 py-0.5 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
+              activeView === 'table'
+                ? 'border-cyan-400 text-slate-50'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {t.periodicTable}
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeView('index')}
+            className={`whitespace-nowrap shrink-0 py-0.5 transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-t ${
+              activeView === 'index'
+                ? 'border-cyan-400 text-slate-50'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {t.elementIndex}
+          </button>
+        </nav>
+      )}
     </header>
   );
 };

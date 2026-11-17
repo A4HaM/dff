@@ -46,6 +46,7 @@ interface FlashcardSessionViewProps {
   onChangeTestSubjects: (subjects: QuizSubject[]) => void;
   quizMode: QuizMode;
   onChangeQuizMode: (mode: QuizMode) => void;
+  isMobileLayout?: boolean;
 }
 
 function shuffleArray<T>(items: T[]): T[] {
@@ -174,6 +175,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
   onChangeTestSubjects,
   quizMode,
   onChangeQuizMode,
+  isMobileLayout = false,
 }) => {
   const t = getTranslations(language);
   const m = getMetallicStrings(language);
@@ -473,8 +475,12 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
 
   if (selectedElements.length === 0) {
     return (
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <div className="rounded-xl border border-slate-800/80 bg-[#10151E] p-8 text-center space-y-5">
+      <section className={`mx-auto max-w-3xl ${isMobileLayout ? 'px-3 py-8' : 'px-6 py-16'}`}>
+        <div
+          className={`rounded-xl border border-slate-800/80 bg-[#10151E] text-center space-y-5 ${
+            isMobileLayout ? 'p-5' : 'p-8'
+          }`}
+        >
           <h1 className="font-display text-2xl font-semibold text-slate-50">
             {t.flashcards.emptyTitle}
           </h1>
@@ -564,9 +570,17 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
     : '';
 
   return (
-    <section className="mx-auto max-w-5xl px-4 py-6 sm:px-6 space-y-6">
+    <section
+      className={`mx-auto max-w-5xl ${
+        isMobileLayout ? 'px-3 py-4 space-y-4' : 'px-6 py-6 space-y-6'
+      }`}
+    >
       {/* Study Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800/80 bg-[#10151E] p-3">
+      <div
+        className={`flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-slate-800/80 bg-[#10151E] ${
+          isMobileLayout ? 'p-2.5' : 'p-3 gap-3'
+        }`}
+      >
         <div className="flex flex-wrap items-center gap-2 max-w-full">
           {/* Test Subjects Multi-Select Checkboxes */}
           <div
@@ -689,13 +703,27 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
 
       {/* Active Flashcard Stage OR Completion Summary */}
       {isSessionComplete ? (
-        <div className="rounded-xl border border-slate-800/80 bg-[#10151E] p-6 sm:p-8 space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-800/80 pb-6">
+        <div
+          className={`rounded-xl border border-slate-800/80 bg-[#10151E] space-y-6 ${
+            isMobileLayout ? 'p-4' : 'p-8'
+          }`}
+        >
+          <div
+            className={`flex gap-4 border-b border-slate-800/80 pb-6 ${
+              isMobileLayout
+                ? 'flex-col'
+                : 'flex-row items-center justify-between'
+            }`}
+          >
             <div>
               <p className="text-xs font-medium text-cyan-400">
                 {t.flashcards.sessionComplete}
               </p>
-              <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-50">
+              <h2
+                className={`mt-1 font-display font-bold text-slate-50 ${
+                  isMobileLayout ? 'text-2xl' : 'text-3xl'
+                }`}
+              >
                 {attempts.length > 0
                   ? t.flashcards.accuracyLabel(
                       Math.round((correctCount / attempts.length) * 100)
@@ -749,7 +777,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
             </div>
           </div>
 
-          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            className={`grid gap-2.5 ${
+              isMobileLayout ? 'grid-cols-1' : 'grid-cols-3'
+            }`}
+          >
             {attempts.map((attempt, idx) => {
               const cat = CATEGORY_META[attempt.element.category];
               return (
@@ -822,7 +854,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
           : currentLocalizedName;
 
         return (
-        <div className="mx-auto max-w-2xl space-y-5">
+        <div className={`mx-auto max-w-2xl ${isMobileLayout ? 'space-y-4' : 'space-y-5'}`}>
           {/* FLIP CARD MODE */}
           {quizMode === 'flip' && (
             <>
@@ -831,13 +863,17 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   type="button"
                   onClick={() => setIsFlipped((prev) => !prev)}
                   aria-label={frontAriaLabel}
-                  className={`flashcard-inner preserve-3d relative block w-full min-h-[340px] sm:min-h-[380px] cursor-pointer text-left transition-transform duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-2xl ${
-                    isFlipped ? 'rotate-y-180' : ''
-                  }`}
+                  className={`flashcard-inner preserve-3d relative block w-full cursor-pointer text-left transition-transform duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-2xl ${
+                    isMobileLayout ? 'min-h-[280px]' : 'min-h-[380px]'
+                  } ${isFlipped ? 'rotate-y-180' : ''}`}
                   style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
                 >
                   {/* Card Front */}
-                  <div className="backface-hidden absolute inset-0 flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#10151E] p-6 sm:p-8">
+                  <div
+                    className={`backface-hidden absolute inset-0 flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#10151E] ${
+                      isMobileLayout ? 'p-5' : 'p-8'
+                    }`}
+                  >
                     <div className="flex items-center justify-between gap-2 text-xs">
                       <span className="text-slate-400">
                         {targetType === 'name'
@@ -851,20 +887,36 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       </span>
                     </div>
 
-                    <div className="my-auto flex flex-col items-center justify-center text-center py-6 space-y-3">
+                    <div
+                      className={`my-auto flex flex-col items-center justify-center text-center space-y-3 ${
+                        isMobileLayout ? 'py-3' : 'py-6'
+                      }`}
+                    >
                       <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
                         {promptSubjectLabel}
                       </span>
                       {promptType === 'symbol' ? (
-                        <div className="font-display text-7xl sm:text-8xl font-bold tracking-tight text-slate-50">
+                        <div
+                          className={`font-display font-bold tracking-tight text-slate-50 ${
+                            isMobileLayout ? 'text-6xl' : 'text-8xl'
+                          }`}
+                        >
                           {currentCard.element.symbol}
                         </div>
                       ) : promptType === 'number' ? (
-                        <div className="font-mono text-7xl sm:text-8xl font-bold tracking-tight text-slate-50 tabular-nums">
+                        <div
+                          className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
+                            isMobileLayout ? 'text-6xl' : 'text-8xl'
+                          }`}
+                        >
                           #{currentCard.element.number}
                         </div>
                       ) : (
-                        <div className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-slate-50 text-balance">
+                        <div
+                          className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
+                            isMobileLayout ? 'text-3xl' : 'text-5xl'
+                          }`}
+                        >
                           {currentLocalizedName}
                         </div>
                       )}
@@ -879,7 +931,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   </div>
 
                   {/* Card Back */}
-                  <div className="backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-2xl border border-cyan-500/40 bg-[#121925] p-6 sm:p-8">
+                  <div
+                    className={`backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-2xl border border-cyan-500/40 bg-[#121925] ${
+                      isMobileLayout ? 'p-5' : 'p-8'
+                    }`}
+                  >
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span className={CATEGORY_META[currentCard.element.category].accentText}>
                         {t.categories[currentCard.element.category].label}
@@ -889,13 +945,21 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       </span>
                     </div>
 
-                    <div className="my-auto flex flex-col items-center justify-center text-center space-y-2 py-4">
+                    <div
+                      className={`my-auto flex flex-col items-center justify-center text-center space-y-2 ${
+                        isMobileLayout ? 'py-2' : 'py-4'
+                      }`}
+                    >
                       {involvesNumber && (
                         <div
                           className={`font-mono tabular-nums font-bold ${
                             targetType === 'number'
-                              ? 'text-5xl sm:text-6xl text-cyan-300'
-                              : 'text-2xl sm:text-3xl text-cyan-200'
+                              ? isMobileLayout
+                                ? 'text-4xl text-cyan-300'
+                                : 'text-6xl text-cyan-300'
+                              : isMobileLayout
+                              ? 'text-xl text-cyan-200'
+                              : 'text-3xl text-cyan-200'
                           }`}
                         >
                           #{currentCard.element.number}
@@ -904,8 +968,12 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       <div
                         className={`font-display font-bold tracking-tight ${
                           targetType === 'symbol'
-                            ? 'text-6xl sm:text-7xl text-cyan-300'
-                            : 'text-4xl sm:text-5xl text-slate-200'
+                            ? isMobileLayout
+                              ? 'text-5xl text-cyan-300'
+                              : 'text-7xl text-cyan-300'
+                            : isMobileLayout
+                            ? 'text-3xl text-slate-200'
+                            : 'text-5xl text-slate-200'
                         }`}
                       >
                         {currentCard.element.symbol}
@@ -913,14 +981,22 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       <div
                         className={`font-display font-semibold ${
                           targetType === 'name'
-                            ? 'text-3xl sm:text-4xl text-cyan-300'
-                            : 'text-xl sm:text-2xl text-slate-100'
+                            ? isMobileLayout
+                              ? 'text-2xl text-cyan-300'
+                              : 'text-4xl text-cyan-300'
+                            : isMobileLayout
+                            ? 'text-lg text-slate-100'
+                            : 'text-2xl text-slate-100'
                         }`}
                       >
                         {currentLocalizedName}
                       </div>
                       {language === 'en' ? (
-                        <p className="max-w-md pt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                        <p
+                          className={`max-w-md pt-1.5 text-slate-300 leading-relaxed ${
+                            isMobileLayout ? 'text-xs' : 'text-sm pt-2'
+                          }`}
+                        >
                           {currentCard.element.hint}
                         </p>
                       ) : (
@@ -949,7 +1025,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsFlipped(true)}
-                    className="w-full sm:w-auto min-w-[200px] rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors"
+                    className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors ${
+                      isMobileLayout ? 'w-full' : 'w-auto min-w-[200px]'
+                    }`}
                   >
                     {t.flashcards.revealAnswer}
                   </button>
@@ -958,7 +1036,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleFlipGrade(false)}
-                      className="flex-1 sm:flex-initial min-w-[168px] inline-flex items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/30 px-5 py-3 text-sm font-semibold text-rose-200 hover:bg-rose-950/50 transition-colors"
+                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/30 font-semibold text-rose-200 hover:bg-rose-950/50 transition-colors ${
+                        isMobileLayout
+                          ? 'flex-1 px-3 py-2.5 text-xs'
+                          : 'min-w-[168px] px-5 py-3 text-sm'
+                      }`}
                     >
                       <X className="h-4 w-4" />
                       <span>{t.flashcards.needsPractice}</span>
@@ -966,7 +1048,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleFlipGrade(true)}
-                      className="flex-1 sm:flex-initial min-w-[168px] inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/30 px-5 py-3 text-sm font-semibold text-emerald-200 hover:bg-emerald-950/50 transition-colors"
+                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/30 font-semibold text-emerald-200 hover:bg-emerald-950/50 transition-colors ${
+                        isMobileLayout
+                          ? 'flex-1 px-3 py-2.5 text-xs'
+                          : 'min-w-[168px] px-5 py-3 text-sm'
+                      }`}
                     >
                       <Check className="h-4 w-4" />
                       <span>{t.flashcards.gotIt}</span>
@@ -975,15 +1061,21 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 )}
               </div>
 
-              <p className="text-center text-xs text-slate-500">
-                {t.flashcards.flipKeyboardHint}
-              </p>
+              {!isMobileLayout && (
+                <p className="text-center text-xs text-slate-500">
+                  {t.flashcards.flipKeyboardHint}
+                </p>
+              )}
             </>
           )}
 
           {/* TYPE ANSWER MODE */}
           {quizMode === 'type' && (
-            <div className="rounded-2xl border border-slate-800 bg-[#10151E] p-6 sm:p-8 space-y-6">
+            <div
+              className={`rounded-2xl border border-slate-800 bg-[#10151E] ${
+                isMobileLayout ? 'p-5 space-y-4' : 'p-8 space-y-6'
+              }`}
+            >
               <div className="flex items-center justify-between gap-2 text-xs">
                 <span className="text-slate-400">
                   {targetType === 'name'
@@ -997,27 +1089,39 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 </span>
               </div>
 
-              <div className="py-6 text-center space-y-2">
+              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-3' : 'py-6'}`}>
                 <div className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
                   {promptSubjectLabel}
                 </div>
                 {promptType === 'symbol' ? (
-                  <div className="font-display text-7xl sm:text-8xl font-bold tracking-tight text-slate-50">
+                  <div
+                    className={`font-display font-bold tracking-tight text-slate-50 ${
+                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    }`}
+                  >
                     {currentCard.element.symbol}
                   </div>
                 ) : promptType === 'number' ? (
-                  <div className="font-mono text-7xl sm:text-8xl font-bold tracking-tight text-slate-50 tabular-nums">
+                  <div
+                    className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
+                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    }`}
+                  >
                     #{currentCard.element.number}
                   </div>
                 ) : (
-                  <div className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-slate-50 text-balance">
+                  <div
+                    className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
+                      isMobileLayout ? 'text-3xl' : 'text-5xl'
+                    }`}
+                  >
                     {currentLocalizedName}
                   </div>
                 )}
               </div>
 
               <form onSubmit={handleTypeSubmit} className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-2.5">
+                <div className={`flex gap-2.5 ${isMobileLayout ? 'flex-col' : 'flex-row'}`}>
                   <input
                     ref={inputRef}
                     type="text"
@@ -1047,7 +1151,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       <button
                         type="submit"
                         disabled={!typedInput.trim()}
-                        className="flex-1 sm:flex-initial rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-40 transition-colors whitespace-nowrap"
+                        className={`rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-40 transition-colors whitespace-nowrap ${
+                          isMobileLayout ? 'flex-1' : 'flex-initial'
+                        }`}
                       >
                         {t.flashcards.check}
                       </button>
@@ -1062,7 +1168,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   ) : (
                     <button
                       type="submit"
-                      className="rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap"
+                      className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap ${
+                        isMobileLayout ? 'w-full' : ''
+                      }`}
                     >
                       {currentIndex + 1 === deck.length
                         ? t.flashcards.finishSession
@@ -1115,7 +1223,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
 
           {/* MULTIPLE CHOICE MODE */}
           {quizMode === 'choice' && (
-            <div className="rounded-2xl border border-slate-800 bg-[#10151E] p-6 sm:p-8 space-y-6">
+            <div
+              className={`rounded-2xl border border-slate-800 bg-[#10151E] ${
+                isMobileLayout ? 'p-5 space-y-4' : 'p-8 space-y-6'
+              }`}
+            >
               <div className="flex items-center justify-between gap-2 text-xs">
                 <span className="text-slate-400">
                   {targetType === 'name'
@@ -1129,26 +1241,38 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 </span>
               </div>
 
-              <div className="py-4 text-center space-y-2">
+              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-2' : 'py-4'}`}>
                 <div className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
                   {promptSubjectLabel}
                 </div>
                 {promptType === 'symbol' ? (
-                  <div className="font-display text-7xl sm:text-8xl font-bold tracking-tight text-slate-50">
+                  <div
+                    className={`font-display font-bold tracking-tight text-slate-50 ${
+                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    }`}
+                  >
                     {currentCard.element.symbol}
                   </div>
                 ) : promptType === 'number' ? (
-                  <div className="font-mono text-7xl sm:text-8xl font-bold tracking-tight text-slate-50 tabular-nums">
+                  <div
+                    className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
+                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    }`}
+                  >
                     #{currentCard.element.number}
                   </div>
                 ) : (
-                  <div className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-slate-50 text-balance">
+                  <div
+                    className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
+                      isMobileLayout ? 'text-3xl' : 'text-5xl'
+                    }`}
+                  >
                     {currentLocalizedName}
                   </div>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className={`grid gap-3 ${isMobileLayout ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {choiceOptions.map((option, idx) => {
                   const isTarget = option.number === currentCard.element.number;
                   const isPicked = submittedState?.selectedChoiceNumber === option.number;
@@ -1210,7 +1334,13 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
               </div>
 
               {submittedState && (
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 border-t border-slate-800/80">
+                <div
+                  className={`flex gap-3 pt-2 border-t border-slate-800/80 ${
+                    isMobileLayout
+                      ? 'flex-col'
+                      : 'flex-row items-center justify-between'
+                  }`}
+                >
                   <p className="text-xs text-slate-300">
                     <span className="font-semibold text-slate-100">
                       {currentLocalizedName} ({bannerSymbol})
@@ -1230,7 +1360,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                         userAnswer: submittedState.userAnswer,
                       })
                     }
-                    className="rounded-xl bg-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0"
+                    className={`rounded-xl bg-cyan-400 px-5 py-2.5 text-xs font-semibold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 ${
+                      isMobileLayout ? 'w-full' : ''
+                    }`}
                   >
                     {currentIndex + 1 === deck.length
                       ? t.flashcards.viewResults
@@ -1239,9 +1371,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 </div>
               )}
 
-              <p className="text-center text-xs text-slate-500">
-                {t.flashcards.choiceKeyboardHint}
-              </p>
+              {!isMobileLayout && (
+                <p className="text-center text-xs text-slate-500">
+                  {t.flashcards.choiceKeyboardHint}
+                </p>
+              )}
             </div>
           )}
         </div>

@@ -704,3 +704,42 @@ export function getAnswerLabelPrefix(lang: string): string {
   const key = ALIASES[lang] ?? lang;
   return ANSWER_LABEL_BY_LANG[key] ?? ANSWER_LABEL_BY_LANG.en;
 }
+
+export interface LayoutModeStrings {
+  pc: string;
+  mobile: string;
+  switchToMobile: string;
+  switchToPc: string;
+}
+
+const LAYOUT_MODE_BY_LANG: Record<string, LayoutModeStrings> = {
+  en: { pc: 'PC', mobile: 'Mobile', switchToMobile: 'Switch to Mobile view', switchToPc: 'Switch to PC view' },
+  es: { pc: 'PC', mobile: 'Móvil', switchToMobile: 'Cambiar a vista móvil', switchToPc: 'Cambiar a vista PC' },
+  fr: { pc: 'PC', mobile: 'Mobile', switchToMobile: 'Passer en vue mobile', switchToPc: 'Passer en vue PC' },
+  de: { pc: 'PC', mobile: 'Mobil', switchToMobile: 'Zur Mobilansicht wechseln', switchToPc: 'Zur PC-Ansicht wechseln' },
+  pt: { pc: 'PC', mobile: 'Celular', switchToMobile: 'Mudar para modo celular', switchToPc: 'Mudar para modo PC' },
+  it: { pc: 'PC', mobile: 'Mobile', switchToMobile: 'Passa a vista mobile', switchToPc: 'Passa a vista PC' },
+  ru: { pc: 'ПК', mobile: 'Мобильный', switchToMobile: 'Переключить на мобильный вид', switchToPc: 'Переключить на вид ПК' },
+  uk: { pc: 'ПК', mobile: 'Мобільний', switchToMobile: 'Перемкнути на мобільний вигляд', switchToPc: 'Перемкнути на вигляд ПК' },
+  ar: { pc: 'كمبيوتر', mobile: 'جوال', switchToMobile: 'التبديل إلى وضع الجوال', switchToPc: 'التبديل إلى وضع الكمبيوتر' },
+  fa: { pc: 'رایانه', mobile: 'موبایل', switchToMobile: 'تغییر به نمای موبایل', switchToPc: 'تغییر به نمای رایانه' },
+  hi: { pc: 'पीसी', mobile: 'मोबाइल', switchToMobile: 'मोबाइल मोड पर स्विच करें', switchToPc: 'पीसी मोड पर स्विच करें' },
+  ja: { pc: 'PC', mobile: 'モバイル', switchToMobile: 'モバイル表示に切替', switchToPc: 'PC表示に切替' },
+  ko: { pc: 'PC', mobile: '모바일', switchToMobile: '모바일 모드로 전환', switchToPc: 'PC 모드로 전환' },
+  zh: { pc: '电脑版', mobile: '手机版', switchToMobile: '切换为手机视图', switchToPc: '切换为电脑视图' },
+  'zh-TW': { pc: '電腦版', mobile: '手機版', switchToMobile: '切換為手機檢視', switchToPc: '切換為電腦檢視' },
+  tr: { pc: 'PC', mobile: 'Mobil', switchToMobile: 'Mobil görünüme geç', switchToPc: 'PC görünümüne geç' },
+  nl: { pc: 'PC', mobile: 'Mobiel', switchToMobile: 'Naar mobiele weergave', switchToPc: 'Naar PC-weergave' },
+  pl: { pc: 'PC', mobile: 'Mobilny', switchToMobile: 'Przełącz na widok mobilny', switchToPc: 'Przełącz na widok PC' },
+  id: { pc: 'PC', mobile: 'Seluler', switchToMobile: 'Beralih ke tampilan seluler', switchToPc: 'Beralih ke tampilan PC' },
+  vi: { pc: 'PC', mobile: 'Di động', switchToMobile: 'Chuyển sang giao diện di động', switchToPc: 'Chuyển sang giao diện PC' },
+  th: { pc: 'พีซี', mobile: 'มือถือ', switchToMobile: 'สลับเป็นโหมดมือถือ', switchToPc: 'สลับเป็นโหมดพีซี' },
+  bn: { pc: 'পিসি', mobile: 'মোবাইল', switchToMobile: 'মোবাইল মোডে যান', switchToPc: 'পিসি মোডে যান' },
+  ro: { pc: 'PC', mobile: 'Mobil', switchToMobile: 'Comută la modul mobil', switchToPc: 'Comută la modul PC' },
+  sw: { pc: 'PC', mobile: 'Simu', switchToMobile: 'Badili kwenda mwonekano wa simu', switchToPc: 'Badili kwenda mwonekano wa PC' },
+};
+
+export function getLayoutModeStrings(lang: string): LayoutModeStrings {
+  const key = ALIASES[lang] ?? lang;
+  return LAYOUT_MODE_BY_LANG[key] ?? LAYOUT_MODE_BY_LANG.en;
+}

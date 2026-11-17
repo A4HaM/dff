@@ -5,11 +5,12 @@ import { PeriodicTableView } from './components/PeriodicTableView';
 import { AppView, TopBar } from './components/TopBar';
 import { ELEMENTS } from './data/elements';
 import { ALL_LANGUAGES, getLanguageMeta, SupportedLanguage } from './i18n/translations';
-import { QuizMode, QuizSubject } from './types/element';
+import { LayoutMode, QuizMode, QuizSubject } from './types/element';
 import { playCardSwipeSound } from './utils/soundEffects';
 
 const STORAGE_KEY = 'elementa_selected_elements_v1';
 const LANGUAGE_STORAGE_KEY = 'elementa_language_v1';
+const LAYOUT_MODE_STORAGE_KEY = 'elementa_layout_mode_v1';
 const DEFAULT_SELECTION = [1, 6, 7, 8, 11, 17, 26, 29, 47, 79];
 
 function loadInitialSelection(): Set<number> {
@@ -39,12 +40,28 @@ function loadInitialLanguage(): SupportedLanguage {
   return 'en';
 }
 
+function loadInitialLayoutMode(): LayoutMode {
+  try {
+    const saved = window.localStorage.getItem(LAYOUT_MODE_STORAGE_KEY);
+    if (saved === 'pc' || saved === 'mobile') {
+      return saved;
+    }
+    if (window.innerWidth < 768) {
+      return 'mobile';
+    }
+  } catch {
+    // Ignore storage/window read issues
+  }
+  return 'pc';
+}
+
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('table');
   const [selectedNumbers, setSelectedNumbers] = useState<Set<number>>(loadInitialSelection);
   const [language, setLanguage] = useState<SupportedLanguage>(loadInitialLanguage);
   const [testSubjects, setTestSubjects] = useState<QuizSubject[]>(['symbol', 'name']);
   const [quizMode, setQuizMode] = useState<QuizMode>('flip');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(loadInitialLayoutMode);
 
   useEffect(() => {
     try {
@@ -67,6 +84,14 @@ export default function App() {
       // Ignore storage write issues
     }
   }, [language]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(LAYOUT_MODE_STORAGE_KEY, layoutMode);
+    } catch {
+      // Ignore storage write issues
+    }
+  }, [layoutMode]);
 
   const selectedElements = useMemo(
     () => ELEMENTS.filter((el) => selectedNumbers.has(el.number)),
@@ -108,57 +133,80 @@ export default function App() {
     setActiveView('flashcards');
   }, [selectedNumbers.size, testSubjects.length]);
 
+  const isMobileLayout = layoutMode === 'mobile';
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#080B10] text-slate-100">
-      <TopBar
-        activeView={activeView}
-        onChangeView={setActiveView}
-        selectedCount={selectedNumbers.size}
-        onStartQuiz={handleStartQuiz}
-        language={language}
-        onChangeLanguage={setLanguage}
-      />
+    <div
+      className={
+        isMobileLayout
+          ? 'min-h-screen w-full bg-[#04060A] flex justify-center'
+          : 'min-h-screen w-full overflow-x-auto lg:overflow-x-clip bg-[#080B10] text-slate-100'
+      }
+    >
+      <div
+        className={
+          isMobileLayout
+            ? 'min-h-screen w-full max-w-[420px] flex flex-col bg-[#080B10] text-slate-100 border-x border-slate-800/80 shadow-2xl shadow-black/80 overflow-x-clip'
+            : 'min-h-screen min-w-[1040px] flex flex-col'
+        }
+      >
+        <TopBar
+          activeView={activeView}
+          onChangeView={setActiveView}
+          selectedCount={selectedNumbers.size}
+          onStartQuiz={handleStartQuiz}
+          language={language}
+          onChangeLanguage={setLanguage}
+          layoutMode={layoutMode}
+          onToggleLayoutMode={() =>
+            setLayoutMode((prev) => (prev === 'pc' ? 'mobile' : 'pc'))
+          }
+        />
 
-      <main className="flex-1">
-        {activeView === 'table' && (
-          <PeriodicTableView
-            selectedNumbers={selectedNumbers}
-            onToggleElement={handleToggleElement}
-            onSetSelection={handleSetSelection}
-            onSelectBatch={handleSelectBatch}
-            onClearSelection={handleClearSelection}
-            onStartQuiz={handleStartQuiz}
-            language={language}
-            testSubjects={testSubjects}
-            onChangeTestSubjects={setTestSubjects}
-            quizMode={quizMode}
-            onChangeQuizMode={setQuizMode}
-          />
-        )}
+        <main className="flex-1">
+          {activeView === 'table' && (
+            <PeriodicTableView
+              selectedNumbers={selectedNumbers}
+              onToggleElement={handleToggleElement}
+              onSetSelection={handleSetSelection}
+              onSelectBatch={handleSelectBatch}
+              onClearSelection={handleClearSelection}
+              onStartQuiz={handleStartQuiz}
+              language={language}
+              testSubjects={testSubjects}
+              onChangeTestSubjects={setTestSubjects}
+              quizMode={quizMode}
+              onChangeQuizMode={setQuizMode}
+              isMobileLayout={isMobileLayout}
+            />
+          )}
 
-        {activeView === 'flashcards' && (
-          <FlashcardSessionView
-            selectedElements={selectedElements}
-            onApplyPreset={handleSetSelection}
-            onBackToTable={() => setActiveView('table')}
-            language={language}
-            testSubjects={testSubjects}
-            onChangeTestSubjects={setTestSubjects}
-            quizMode={quizMode}
-            onChangeQuizMode={setQuizMode}
-          />
-        )}
+          {activeView === 'flashcards' && (
+            <FlashcardSessionView
+              selectedElements={selectedElements}
+              onApplyPreset={handleSetSelection}
+              onBackToTable={() => setActiveView('table')}
+              language={language}
+              testSubjects={testSubjects}
+              onChangeTestSubjects={setTestSubjects}
+              quizMode={quizMode}
+              onChangeQuizMode={setQuizMode}
+              isMobileLayout={isMobileLayout}
+            />
+          )}
 
-        {activeView === 'index' && (
-          <ElementIndexView
-            selectedNumbers={selectedNumbers}
-            onToggleElement={handleToggleElement}
-            onSelectBatch={handleSelectBatch}
-            onStartQuiz={handleStartQuiz}
-            language={language}
-          />
-        )}
-      </main>
+          {activeView === 'index' && (
+            <ElementIndexView
+              selectedNumbers={selectedNumbers}
+              onToggleElement={handleToggleElement}
+              onSelectBatch={handleSelectBatch}
+              onStartQuiz={handleStartQuiz}
+              language={language}
+              isMobileLayout={isMobileLayout}
+            />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
