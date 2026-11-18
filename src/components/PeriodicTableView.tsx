@@ -416,26 +416,26 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
       {(() => {
         const renderElementDescription = () =>
           inspectedElement && inspectedMeta ? (
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
-              <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center gap-2 shrink-0 min-w-0">
                 <span
-                  className={`font-mono tabular-nums ${
+                  className={`font-mono tabular-nums shrink-0 ${
                     isMobileLayout
-                      ? 'text-xs font-semibold text-cyan-300 w-7'
-                      : 'text-xs text-slate-400 w-7'
+                      ? 'text-xs font-semibold text-cyan-300 min-w-[2rem]'
+                      : 'text-xs text-slate-400 min-w-[2rem]'
                   }`}
                 >
                   #{inspectedElement.number}
                 </span>
                 <span
-                  className={`font-display font-bold ${
-                    isMobileLayout ? 'text-2xl text-white w-9' : 'text-xl lg:text-2xl text-slate-50 w-8'
+                  className={`font-display font-bold shrink-0 ${
+                    isMobileLayout ? 'text-2xl text-white min-w-[2.25rem]' : 'text-xl lg:text-2xl text-slate-50 min-w-[2.25rem]'
                   }`}
                 >
                   {inspectedElement.symbol}
                 </span>
                 <span
-                  className={`font-semibold ${
+                  className={`font-semibold truncate ${
                     isMobileLayout ? 'text-base text-white' : 'text-sm lg:text-base text-slate-100'
                   }`}
                 >
