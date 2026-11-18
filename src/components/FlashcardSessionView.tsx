@@ -290,7 +290,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
         const accuracyPct = Math.round((correctTotal / nextAttempts.length) * 100);
         // Let the final flip card's grade sound finish before starting the finale sound
         const delay = quizMode === 'flip' ? 0.3 : 0;
-        if (accuracyPct <= 10) {
+        if (accuracyPct <= 25) {
           playExtremeFailureSound(delay);
         } else if (accuracyPct >= 66 && accuracyPct <= 70) {
           playJapaneseEasAlarmSound(delay);
@@ -572,23 +572,33 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
   return (
     <section
       className={`mx-auto max-w-5xl ${
-        isMobileLayout ? 'px-3 py-4 space-y-4' : 'px-6 py-6 space-y-6'
+        isMobileLayout ? 'px-3 py-3.5 space-y-3.5' : 'px-4 lg:px-6 py-4 space-y-4'
       }`}
     >
       {/* Study Controls Bar */}
       <div
-        className={`flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-slate-800/80 bg-[#10151E] ${
-          isMobileLayout ? 'p-2.5' : 'p-3 gap-3'
+        className={`flex flex-wrap items-center justify-between gap-2.5 rounded-xl border ${
+          isMobileLayout
+            ? 'border-slate-700/90 bg-[#121824] p-3'
+            : 'border-slate-800/80 bg-[#10151E] p-2.5 lg:p-3 gap-3'
         }`}
       >
         <div className="flex flex-wrap items-center gap-2 max-w-full">
           {/* Test Subjects Multi-Select Checkboxes */}
           <div
-            className="flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-800 bg-[#080B10] px-2 py-1 max-w-full"
+            className={`flex flex-wrap items-center gap-1.5 rounded-lg border px-2 py-1 max-w-full ${
+              isMobileLayout
+                ? 'border-slate-700 bg-[#0A0E16]'
+                : 'border-slate-800 bg-[#080B10]'
+            }`}
             role="group"
             aria-label={m.testOnHeading}
           >
-            <span className="text-[11px] font-semibold text-slate-400 px-1">
+            <span
+              className={`font-semibold px-1 ${
+                isMobileLayout ? 'text-xs text-slate-200' : 'text-[11px] text-slate-400'
+              }`}
+            >
               {m.testOnHeading}:
             </span>
             {getQuizSubjectOptions(t.flashcards.symbolToName, language).map((opt) => {
@@ -596,9 +606,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
               return (
                 <label
                   key={opt.id}
-                  className={`inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-xs font-medium cursor-pointer select-none transition-colors whitespace-nowrap shrink-0 ${
+                  className={`inline-flex items-center gap-2 rounded-md border px-2.5 py-1 text-xs font-semibold cursor-pointer select-none transition-colors whitespace-nowrap shrink-0 ${
                     checked
-                      ? 'border-cyan-400/40 bg-[#161D2A] text-cyan-200'
+                      ? 'border-cyan-400/50 bg-[#182334] text-cyan-100'
+                      : isMobileLayout
+                      ? 'border-transparent text-slate-200 hover:text-white hover:bg-[#141C29]'
                       : 'border-transparent text-slate-400 hover:text-slate-100 hover:bg-[#10151E]'
                   }`}
                 >
@@ -613,7 +625,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     className={`flex h-3.5 w-3.5 items-center justify-center rounded-[4px] border transition-colors ${
                       checked
                         ? 'border-cyan-300 bg-cyan-400 text-slate-950'
-                        : 'border-slate-600 bg-[#10151E]'
+                        : 'border-slate-500 bg-[#10151E]'
                     }`}
                   >
                     {checked && <Check className="h-2.5 w-2.5 stroke-[3]" />}
@@ -626,7 +638,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
 
           {/* Quiz Interaction Mode */}
           <div
-            className="flex flex-wrap items-center rounded-lg border border-slate-800 bg-[#080B10] p-1 max-w-full"
+            className={`flex flex-wrap items-center rounded-lg border p-1 max-w-full ${
+              isMobileLayout
+                ? 'border-slate-700 bg-[#0A0E16]'
+                : 'border-slate-800 bg-[#080B10]'
+            }`}
             role="group"
             aria-label="Flashcard interaction mode"
           >
@@ -641,9 +657,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 key={opt.id}
                 type="button"
                 onClick={() => handleModeChange(opt.id)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+                className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 ${
                   quizMode === opt.id
-                    ? 'bg-[#161D2A] text-slate-50 border border-slate-700'
+                    ? 'bg-[#1A2436] text-white border border-cyan-400/40'
+                    : isMobileLayout
+                    ? 'text-slate-300 hover:text-white border border-transparent'
                     : 'text-slate-400 hover:text-slate-200 border border-transparent'
                 }`}
               >
@@ -661,7 +679,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
               playCardSwipeSound();
             }}
             disabled={testSubjects.length < 2}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#080B10] px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-[#161D2A] hover:text-slate-100 disabled:opacity-40 transition-colors whitespace-nowrap shrink-0"
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold disabled:opacity-40 transition-colors whitespace-nowrap shrink-0 ${
+              isMobileLayout
+                ? 'border-slate-700 bg-[#0A0E16] text-slate-100 hover:bg-[#182334]'
+                : 'border-slate-800 bg-[#080B10] text-slate-300 hover:bg-[#161D2A] hover:text-slate-100'
+            }`}
           >
             <Shuffle className="h-3.5 w-3.5" />
             <span>{t.flashcards.shuffle}</span>
@@ -672,27 +694,37 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
       {/* Session Progress & Score Strip */}
       {!isSessionComplete && currentCard && (
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div className="flex items-center gap-3 text-slate-300 font-mono tabular-nums">
+          <div
+            className={`flex flex-wrap items-center justify-between gap-2 ${
+              isMobileLayout ? 'text-[13px] font-semibold' : 'text-xs'
+            }`}
+          >
+            <div className="flex items-center gap-3 text-slate-200 font-mono tabular-nums">
               <span>{t.flashcards.cardProgress(currentIndex + 1, deck.length)}</span>
-              <span aria-hidden="true" className="text-slate-600">·</span>
-              <span className="text-slate-400">{formatDuration(elapsedSeconds)}</span>
+              <span aria-hidden="true" className="text-slate-500">·</span>
+              <span className={isMobileLayout ? 'text-slate-300' : 'text-slate-400'}>
+                {formatDuration(elapsedSeconds)}
+              </span>
             </div>
 
             <div className="flex items-center gap-3 font-mono tabular-nums">
-              <span className="inline-flex items-center gap-1 text-emerald-400">
+              <span className="inline-flex items-center gap-1 text-emerald-300">
                 <Check className="h-3.5 w-3.5" />
                 <span>{t.flashcards.correctCount(correctCount)}</span>
               </span>
-              <span aria-hidden="true" className="text-slate-600">·</span>
-              <span className="inline-flex items-center gap-1 text-rose-400">
+              <span aria-hidden="true" className="text-slate-500">·</span>
+              <span className="inline-flex items-center gap-1 text-rose-300">
                 <X className="h-3.5 w-3.5" />
                 <span>{t.flashcards.missedCount(missedAttempts.length)}</span>
               </span>
             </div>
           </div>
 
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800/80">
+          <div
+            className={`w-full overflow-hidden rounded-full bg-slate-800 ${
+              isMobileLayout ? 'h-2' : 'h-1.5'
+            }`}
+          >
             <div
               className="h-full bg-cyan-400 transition-all duration-200"
               style={{ width: `${(currentIndex / deck.length) * 100}%` }}
@@ -854,7 +886,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
           : currentLocalizedName;
 
         return (
-        <div className={`mx-auto max-w-2xl ${isMobileLayout ? 'space-y-4' : 'space-y-5'}`}>
+        <div className={`mx-auto max-w-2xl ${isMobileLayout ? 'space-y-3.5' : 'space-y-4'}`}>
           {/* FLIP CARD MODE */}
           {quizMode === 'flip' && (
             <>
@@ -864,83 +896,105 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   onClick={() => setIsFlipped((prev) => !prev)}
                   aria-label={frontAriaLabel}
                   className={`flashcard-inner preserve-3d relative block w-full cursor-pointer text-left transition-transform duration-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-2xl ${
-                    isMobileLayout ? 'min-h-[280px]' : 'min-h-[380px]'
+                    isMobileLayout ? 'min-h-[310px]' : 'min-h-[360px]'
                   } ${isFlipped ? 'rotate-y-180' : ''}`}
                   style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }}
                 >
                   {/* Card Front */}
                   <div
-                    className={`backface-hidden absolute inset-0 flex flex-col justify-between rounded-2xl border border-slate-800 bg-[#10151E] ${
-                      isMobileLayout ? 'p-5' : 'p-8'
+                    className={`backface-hidden absolute inset-0 flex flex-col justify-between rounded-2xl border ${
+                      isMobileLayout
+                        ? 'border-slate-700/90 bg-[#131A26] p-5'
+                        : 'border-slate-800 bg-[#10151E] p-7'
                     }`}
                   >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <span className="text-slate-400">
+                    <div
+                      className={`flex items-center justify-between gap-2 ${
+                        isMobileLayout ? 'text-[13px] font-medium' : 'text-xs'
+                      }`}
+                    >
+                      <span className={isMobileLayout ? 'text-slate-200' : 'text-slate-400'}>
                         {targetType === 'name'
                           ? t.flashcards.identifyName
                           : targetType === 'symbol'
                           ? t.flashcards.identifySymbol
                           : m.identifyNumber}
                       </span>
-                      <span className="font-medium text-slate-400 whitespace-nowrap shrink-0">
+                      <span
+                        className={`font-semibold whitespace-nowrap shrink-0 ${
+                          isMobileLayout ? 'text-slate-200' : 'text-slate-400'
+                        }`}
+                      >
                         {promptSubjectLabel} → {targetSubjectLabel}
                       </span>
                     </div>
 
                     <div
                       className={`my-auto flex flex-col items-center justify-center text-center space-y-3 ${
-                        isMobileLayout ? 'py-3' : 'py-6'
+                        isMobileLayout ? 'py-3' : 'py-5'
                       }`}
                     >
-                      <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+                      <span
+                        className={`text-xs font-semibold uppercase tracking-wider ${
+                          isMobileLayout ? 'text-slate-300' : 'text-slate-400'
+                        }`}
+                      >
                         {promptSubjectLabel}
                       </span>
                       {promptType === 'symbol' ? (
                         <div
-                          className={`font-display font-bold tracking-tight text-slate-50 ${
-                            isMobileLayout ? 'text-6xl' : 'text-8xl'
+                          className={`font-display font-bold tracking-tight text-white ${
+                            isMobileLayout ? 'text-7xl' : 'text-8xl'
                           }`}
                         >
                           {currentCard.element.symbol}
                         </div>
                       ) : promptType === 'number' ? (
                         <div
-                          className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
-                            isMobileLayout ? 'text-6xl' : 'text-8xl'
+                          className={`font-mono font-bold tracking-tight text-white tabular-nums ${
+                            isMobileLayout ? 'text-7xl' : 'text-8xl'
                           }`}
                         >
                           #{currentCard.element.number}
                         </div>
                       ) : (
                         <div
-                          className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
-                            isMobileLayout ? 'text-3xl' : 'text-5xl'
+                          className={`font-display font-bold tracking-tight text-white text-balance ${
+                            isMobileLayout ? 'text-4xl' : 'text-5xl'
                           }`}
                         >
                           {currentLocalizedName}
                         </div>
                       )}
-                      <div className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/35 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-200">
+                      <div className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-400/45 bg-cyan-400/15 px-3 py-1 text-xs font-semibold text-cyan-100">
                         <span>{answerBadgeText}</span>
                       </div>
                     </div>
 
-                    <div className="text-center text-xs text-slate-500">
+                    <div
+                      className={`text-center ${
+                        isMobileLayout ? 'text-[13px] font-medium text-slate-300' : 'text-xs text-slate-500'
+                      }`}
+                    >
                       {t.flashcards.clickToReveal}
                     </div>
                   </div>
 
                   {/* Card Back */}
                   <div
-                    className={`backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-2xl border border-cyan-500/40 bg-[#121925] ${
-                      isMobileLayout ? 'p-5' : 'p-8'
+                    className={`backface-hidden rotate-y-180 absolute inset-0 flex flex-col justify-between rounded-2xl border border-cyan-500/50 bg-[#131C2B] ${
+                      isMobileLayout ? 'p-5' : 'p-7'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span className={CATEGORY_META[currentCard.element.category].accentText}>
+                    <div
+                      className={`flex items-center justify-between ${
+                        isMobileLayout ? 'text-[13px] text-slate-200' : 'text-xs text-slate-400'
+                      }`}
+                    >
+                      <span className={`font-semibold ${CATEGORY_META[currentCard.element.category].accentText}`}>
                         {t.categories[currentCard.element.category].label}
                       </span>
-                      <span className="font-mono tabular-nums text-slate-300">
+                      <span className="font-mono tabular-nums text-slate-200">
                         #{currentCard.element.number} · {currentCard.element.atomicMass} u
                       </span>
                     </div>
@@ -955,10 +1009,10 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                           className={`font-mono tabular-nums font-bold ${
                             targetType === 'number'
                               ? isMobileLayout
-                                ? 'text-4xl text-cyan-300'
+                                ? 'text-5xl text-cyan-300'
                                 : 'text-6xl text-cyan-300'
                               : isMobileLayout
-                              ? 'text-xl text-cyan-200'
+                              ? 'text-2xl text-cyan-200'
                               : 'text-3xl text-cyan-200'
                           }`}
                         >
@@ -969,10 +1023,10 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                         className={`font-display font-bold tracking-tight ${
                           targetType === 'symbol'
                             ? isMobileLayout
-                              ? 'text-5xl text-cyan-300'
+                              ? 'text-6xl text-cyan-300'
                               : 'text-7xl text-cyan-300'
                             : isMobileLayout
-                            ? 'text-3xl text-slate-200'
+                            ? 'text-4xl text-slate-100'
                             : 'text-5xl text-slate-200'
                         }`}
                       >
@@ -982,10 +1036,10 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                         className={`font-display font-semibold ${
                           targetType === 'name'
                             ? isMobileLayout
-                              ? 'text-2xl text-cyan-300'
+                              ? 'text-3xl text-cyan-300'
                               : 'text-4xl text-cyan-300'
                             : isMobileLayout
-                            ? 'text-lg text-slate-100'
+                            ? 'text-xl text-slate-100'
                             : 'text-2xl text-slate-100'
                         }`}
                       >
@@ -993,21 +1047,25 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       </div>
                       {language === 'en' ? (
                         <p
-                          className={`max-w-md pt-1.5 text-slate-300 leading-relaxed ${
-                            isMobileLayout ? 'text-xs' : 'text-sm pt-2'
+                          className={`max-w-md pt-1.5 leading-relaxed ${
+                            isMobileLayout ? 'text-[13px] text-slate-200' : 'text-sm pt-2 text-slate-300'
                           }`}
                         >
                           {currentCard.element.hint}
                         </p>
                       ) : (
-                        <p className="pt-2 text-xs text-slate-400">
+                        <p className={`pt-2 ${isMobileLayout ? 'text-[13px] text-slate-200' : 'text-xs text-slate-400'}`}>
                           {t.table.periodLabel(currentCard.element.period)} ·{' '}
                           {t.table.groupLabel(getCasGroupLabel(currentCard.element.group))}
                         </p>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+                    <div
+                      className={`flex items-center justify-between font-mono ${
+                        isMobileLayout ? 'text-xs text-slate-200' : 'text-xs text-slate-400'
+                      }`}
+                    >
                       <span>
                         {t.flashcards.configPrefix} {currentCard.element.electronConfig}
                       </span>
@@ -1025,7 +1083,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsFlipped(true)}
-                    className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors ${
+                    className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-cyan-300 transition-colors ${
                       isMobileLayout ? 'w-full' : 'w-auto min-w-[200px]'
                     }`}
                   >
@@ -1036,9 +1094,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleFlipGrade(false)}
-                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/30 font-semibold text-rose-200 hover:bg-rose-950/50 transition-colors ${
+                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-rose-500/50 bg-rose-950/35 font-semibold text-rose-100 hover:bg-rose-950/55 transition-colors ${
                         isMobileLayout
-                          ? 'flex-1 px-3 py-2.5 text-xs'
+                          ? 'flex-1 px-3 py-3 text-sm'
                           : 'min-w-[168px] px-5 py-3 text-sm'
                       }`}
                     >
@@ -1048,9 +1106,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     <button
                       type="button"
                       onClick={() => handleFlipGrade(true)}
-                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-950/30 font-semibold text-emerald-200 hover:bg-emerald-950/50 transition-colors ${
+                      className={`inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-950/35 font-semibold text-emerald-100 hover:bg-emerald-950/55 transition-colors ${
                         isMobileLayout
-                          ? 'flex-1 px-3 py-2.5 text-xs'
+                          ? 'flex-1 px-3 py-3 text-sm'
                           : 'min-w-[168px] px-5 py-3 text-sm'
                       }`}
                     >
@@ -1072,47 +1130,57 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
           {/* TYPE ANSWER MODE */}
           {quizMode === 'type' && (
             <div
-              className={`rounded-2xl border border-slate-800 bg-[#10151E] ${
-                isMobileLayout ? 'p-5 space-y-4' : 'p-8 space-y-6'
+              className={`rounded-2xl border ${
+                isMobileLayout
+                  ? 'border-slate-700/90 bg-[#131A26] p-5 space-y-4'
+                  : 'border-slate-800 bg-[#10151E] p-7 space-y-5'
               }`}
             >
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="text-slate-400">
+              <div
+                className={`flex items-center justify-between gap-2 ${
+                  isMobileLayout ? 'text-[13px]' : 'text-xs'
+                }`}
+              >
+                <span className={isMobileLayout ? 'text-slate-200 font-medium' : 'text-slate-400'}>
                   {targetType === 'name'
                     ? t.flashcards.typeNamePrompt
                     : targetType === 'symbol'
                     ? t.flashcards.typeSymbolPrompt
                     : m.typeNumberPrompt}
                 </span>
-                <span className="inline-flex items-center rounded-md border border-cyan-400/40 bg-cyan-400/10 px-2.5 py-0.5 font-semibold text-cyan-200 whitespace-nowrap shrink-0">
+                <span className="inline-flex items-center rounded-md border border-cyan-400/45 bg-cyan-400/15 px-2.5 py-0.5 text-xs font-semibold text-cyan-100 whitespace-nowrap shrink-0">
                   {answerBadgeText}
                 </span>
               </div>
 
-              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-3' : 'py-6'}`}>
-                <div className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-3' : 'py-5'}`}>
+                <div
+                  className={`text-xs font-semibold uppercase tracking-wider ${
+                    isMobileLayout ? 'text-slate-300' : 'text-slate-400'
+                  }`}
+                >
                   {promptSubjectLabel}
                 </div>
                 {promptType === 'symbol' ? (
                   <div
-                    className={`font-display font-bold tracking-tight text-slate-50 ${
-                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    className={`font-display font-bold tracking-tight text-white ${
+                      isMobileLayout ? 'text-7xl' : 'text-8xl'
                     }`}
                   >
                     {currentCard.element.symbol}
                   </div>
                 ) : promptType === 'number' ? (
                   <div
-                    className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
-                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    className={`font-mono font-bold tracking-tight text-white tabular-nums ${
+                      isMobileLayout ? 'text-7xl' : 'text-8xl'
                     }`}
                   >
                     #{currentCard.element.number}
                   </div>
                 ) : (
                   <div
-                    className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
-                      isMobileLayout ? 'text-3xl' : 'text-5xl'
+                    className={`font-display font-bold tracking-tight text-white text-balance ${
+                      isMobileLayout ? 'text-4xl' : 'text-5xl'
                     }`}
                   >
                     {currentLocalizedName}
@@ -1143,7 +1211,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                         ? t.flashcards.typeSymbolPrompt
                         : m.typeNumberPrompt
                     }
-                    className="flex-1 rounded-xl border border-slate-700 bg-[#080B10] px-4 py-3 text-base text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none disabled:opacity-70"
+                    className={`flex-1 rounded-xl border px-4 py-3 text-base text-white focus:border-cyan-400 focus:outline-none disabled:opacity-70 ${
+                      isMobileLayout
+                        ? 'border-slate-600 bg-[#0A0E16] placeholder:text-slate-400'
+                        : 'border-slate-700 bg-[#080B10] placeholder:text-slate-500'
+                    }`}
                   />
 
                   {!submittedState ? (
@@ -1151,7 +1223,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       <button
                         type="submit"
                         disabled={!typedInput.trim()}
-                        className={`rounded-xl bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 disabled:opacity-40 transition-colors whitespace-nowrap ${
+                        className={`rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-cyan-300 disabled:opacity-40 transition-colors whitespace-nowrap ${
                           isMobileLayout ? 'flex-1' : 'flex-initial'
                         }`}
                       >
@@ -1160,7 +1232,11 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       <button
                         type="button"
                         onClick={handleRevealTypeAnswer}
-                        className="rounded-xl border border-slate-700 bg-[#161D2A] px-4 py-3 text-xs font-medium text-slate-300 hover:bg-slate-800 transition-colors whitespace-nowrap"
+                        className={`rounded-xl border px-4 py-3 text-xs font-semibold transition-colors whitespace-nowrap ${
+                          isMobileLayout
+                            ? 'border-slate-600 bg-[#182233] text-slate-100 hover:bg-slate-800'
+                            : 'border-slate-700 bg-[#161D2A] text-slate-300 hover:bg-slate-800'
+                        }`}
                       >
                         {t.flashcards.show}
                       </button>
@@ -1168,7 +1244,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                   ) : (
                     <button
                       type="submit"
-                      className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap ${
+                      className={`rounded-xl bg-cyan-400 px-6 py-3 text-sm font-bold text-slate-950 hover:bg-cyan-300 transition-colors whitespace-nowrap ${
                         isMobileLayout ? 'w-full' : ''
                       }`}
                     >
@@ -1184,8 +1260,8 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                 <div
                   className={`rounded-xl border px-4 py-3.5 text-sm space-y-1 ${
                     submittedState.correct
-                      ? 'border-emerald-500/40 bg-emerald-950/25 text-emerald-200'
-                      : 'border-rose-500/40 bg-rose-950/25 text-rose-200'
+                      ? 'border-emerald-500/50 bg-emerald-950/30 text-emerald-100'
+                      : 'border-rose-500/50 bg-rose-950/30 text-rose-100'
                   }`}
                 >
                   <div className="flex items-center gap-2 font-semibold">
@@ -1211,7 +1287,7 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       </>
                     )}
                   </div>
-                  <p className="text-xs text-slate-300">
+                  <p className={`text-slate-200 ${isMobileLayout ? 'text-[13px]' : 'text-xs text-slate-300'}`}>
                     {language === 'en'
                       ? currentCard.element.hint
                       : `${t.categories[currentCard.element.category].label} · ${currentCard.element.atomicMass} u · ${t.states[currentCard.element.state]}`}
@@ -1224,47 +1300,57 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
           {/* MULTIPLE CHOICE MODE */}
           {quizMode === 'choice' && (
             <div
-              className={`rounded-2xl border border-slate-800 bg-[#10151E] ${
-                isMobileLayout ? 'p-5 space-y-4' : 'p-8 space-y-6'
+              className={`rounded-2xl border ${
+                isMobileLayout
+                  ? 'border-slate-700/90 bg-[#131A26] p-5 space-y-4'
+                  : 'border-slate-800 bg-[#10151E] p-7 space-y-5'
               }`}
             >
-              <div className="flex items-center justify-between gap-2 text-xs">
-                <span className="text-slate-400">
+              <div
+                className={`flex items-center justify-between gap-2 ${
+                  isMobileLayout ? 'text-[13px]' : 'text-xs'
+                }`}
+              >
+                <span className={isMobileLayout ? 'text-slate-200 font-medium' : 'text-slate-400'}>
                   {targetType === 'name'
                     ? t.flashcards.chooseNamePrompt
                     : targetType === 'symbol'
                     ? t.flashcards.chooseSymbolPrompt
                     : m.chooseNumberPrompt}
                 </span>
-                <span className="inline-flex items-center rounded-md border border-cyan-400/40 bg-cyan-400/10 px-2.5 py-0.5 font-semibold text-cyan-200 whitespace-nowrap shrink-0">
+                <span className="inline-flex items-center rounded-md border border-cyan-400/45 bg-cyan-400/15 px-2.5 py-0.5 text-xs font-semibold text-cyan-100 whitespace-nowrap shrink-0">
                   {answerBadgeText}
                 </span>
               </div>
 
-              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-2' : 'py-4'}`}>
-                <div className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+              <div className={`text-center space-y-2 ${isMobileLayout ? 'py-2' : 'py-3'}`}>
+                <div
+                  className={`text-xs font-semibold uppercase tracking-wider ${
+                    isMobileLayout ? 'text-slate-300' : 'text-slate-400'
+                  }`}
+                >
                   {promptSubjectLabel}
                 </div>
                 {promptType === 'symbol' ? (
                   <div
-                    className={`font-display font-bold tracking-tight text-slate-50 ${
-                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    className={`font-display font-bold tracking-tight text-white ${
+                      isMobileLayout ? 'text-7xl' : 'text-8xl'
                     }`}
                   >
                     {currentCard.element.symbol}
                   </div>
                 ) : promptType === 'number' ? (
                   <div
-                    className={`font-mono font-bold tracking-tight text-slate-50 tabular-nums ${
-                      isMobileLayout ? 'text-6xl' : 'text-8xl'
+                    className={`font-mono font-bold tracking-tight text-white tabular-nums ${
+                      isMobileLayout ? 'text-7xl' : 'text-8xl'
                     }`}
                   >
                     #{currentCard.element.number}
                   </div>
                 ) : (
                   <div
-                    className={`font-display font-bold tracking-tight text-slate-50 text-balance ${
-                      isMobileLayout ? 'text-3xl' : 'text-5xl'
+                    className={`font-display font-bold tracking-tight text-white text-balance ${
+                      isMobileLayout ? 'text-4xl' : 'text-5xl'
                     }`}
                   >
                     {currentLocalizedName}
@@ -1285,14 +1371,15 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                     label = `#${option.number}`;
                   }
 
-                  let btnClass =
-                    'border-slate-800 bg-[#0B0F17] text-slate-100 hover:border-cyan-400/60 hover:bg-[#161D2A]';
+                  let btnClass = isMobileLayout
+                    ? 'border-slate-700 bg-[#0D131D] text-white hover:border-cyan-400/70 hover:bg-[#182233]'
+                    : 'border-slate-800 bg-[#0B0F17] text-slate-100 hover:border-cyan-400/60 hover:bg-[#161D2A]';
                   if (submittedState) {
                     if (isTarget) {
                       btnClass =
-                        'border-emerald-500/70 bg-emerald-950/35 text-emerald-100';
+                        'border-emerald-500/75 bg-emerald-950/40 text-emerald-100';
                     } else if (isPicked && !isTarget) {
-                      btnClass = 'border-rose-500/70 bg-rose-950/35 text-rose-100';
+                      btnClass = 'border-rose-500/75 bg-rose-950/40 text-rose-100';
                     } else {
                       btnClass = 'border-slate-800/60 bg-[#0B0F17] text-slate-500';
                     }
@@ -1303,7 +1390,9 @@ export const FlashcardSessionView: React.FC<FlashcardSessionViewProps> = ({
                       key={option.number}
                       type="button"
                       onClick={() => handleChoicePick(option)}
-                      className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors ${btnClass}`}
+                      className={`flex items-center justify-between gap-3 rounded-xl border px-4 text-left transition-colors ${
+                        isMobileLayout ? 'py-4' : 'py-3.5'
+                      } ${btnClass}`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="font-mono text-xs text-slate-500 tabular-nums">

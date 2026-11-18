@@ -163,17 +163,16 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
   };
 
   const handleStartClick = () => {
-    let blocked = false;
     if (selectedNumbers.size === 0) {
       setSelectionNotice(true);
-      blocked = true;
+      onStartQuiz();
+      return;
     }
     if (testSubjects.length < 2) {
       setSubjectNotice(true);
       setIsSettingsOpen(true);
-      blocked = true;
+      return;
     }
-    if (blocked) return;
     onStartQuiz();
   };
 
@@ -247,34 +246,44 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
   return (
     <section
       className={`mx-auto max-w-[1440px] ${
-        isMobileLayout ? 'px-3 py-4 space-y-3' : 'px-6 py-5 space-y-4'
+        isMobileLayout ? 'px-3 py-3.5 space-y-3.5' : 'px-4 lg:px-6 py-2.5 space-y-2.5'
       }`}
     >
       {/* Workspace Header & Controls */}
       <div
-        className={`flex gap-4 ${
+        className={`flex gap-3 ${
           isMobileLayout
             ? 'flex-col'
-            : 'flex-row items-end justify-between'
+            : 'flex-row items-center justify-between'
         }`}
       >
-        <div>
+        <div className="min-w-0">
           <h1
             className={`font-display font-semibold tracking-tight text-slate-50 text-balance ${
-              isMobileLayout ? 'text-xl' : 'text-[28px]'
+              isMobileLayout ? 'text-xl font-bold text-white' : 'text-xl lg:text-2xl'
             }`}
           >
             {t.table.title}
           </h1>
-          <p className={`mt-1 text-slate-400 ${isMobileLayout ? 'text-xs' : 'text-sm'}`}>
+          <p
+            className={`${
+              isMobileLayout
+                ? 'mt-1 text-[13px] leading-snug text-slate-300'
+                : 'mt-0.5 text-xs lg:text-[13px] text-slate-400'
+            }`}
+          >
             {t.table.subtitle}
           </p>
         </div>
 
         {/* Preset & Search Toolbar */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <div className={`relative ${isMobileLayout ? 'w-full' : ''}`}>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+            <Search
+              className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 ${
+                isMobileLayout ? 'h-4 w-4 text-slate-400' : 'h-3.5 w-3.5 text-slate-500'
+              }`}
+            />
             <input
               type="text"
               value={searchQuery}
@@ -282,8 +291,10 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               onKeyDown={handleSearchKeyDown}
               placeholder={t.table.findPlaceholder}
               aria-label={t.table.findPlaceholder}
-              className={`rounded-lg border border-slate-800 bg-[#10151E] py-1.5 pl-8 pr-7 text-xs text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none ${
-                isMobileLayout ? 'w-full' : 'w-48'
+              className={`rounded-lg border focus:border-cyan-400 focus:outline-none ${
+                isMobileLayout
+                  ? 'w-full border-slate-700 bg-[#121824] py-2 pl-9 pr-8 text-sm text-white placeholder:text-slate-400'
+                  : 'w-44 lg:w-48 border-slate-800 bg-[#10151E] py-1.5 pl-8 pr-7 text-xs text-slate-100 placeholder:text-slate-500'
               }`}
             />
             {searchQuery && (
@@ -291,26 +302,36 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label={t.table.clearSearch}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-200"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-800/80 bg-[#10151E] p-1">
+          <div
+            className={`flex flex-wrap items-center gap-1 rounded-lg border p-1 ${
+              isMobileLayout
+                ? 'border-slate-700/90 bg-[#121824]'
+                : 'border-slate-800/80 bg-[#10151E]'
+            }`}
+          >
             <div
               title={m.firstNDescription(parsedFirstCount)}
               className={`inline-flex items-center rounded-md border transition-colors whitespace-nowrap shrink-0 ${
                 isFirstNActive
-                  ? 'bg-cyan-400/15 text-cyan-300 border-cyan-400/30'
+                  ? 'bg-cyan-400/20 text-cyan-200 border-cyan-400/45'
+                  : isMobileLayout
+                  ? 'border-transparent text-slate-200 hover:text-white hover:bg-[#1A2232]'
                   : 'border-transparent text-slate-400 hover:text-slate-100 hover:bg-[#161D2A]'
               }`}
             >
               <button
                 type="button"
                 onClick={() => applyFirstCount(parsedFirstCount)}
-                className="pl-2.5 pr-1.5 py-1 text-xs font-medium whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-l-md"
+                className={`pl-2.5 pr-1.5 font-medium whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-l-md ${
+                  isMobileLayout ? 'py-1.5 text-xs font-semibold' : 'py-1 text-xs'
+                }`}
               >
                 {m.firstPrefix}
               </button>
@@ -336,8 +357,8 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 aria-label={m.firstNDescription(parsedFirstCount)}
                 className={`w-9 mr-1 rounded border px-1 py-0.5 text-center font-mono text-xs tabular-nums transition-colors focus:border-cyan-400 focus:outline-none ${
                   isFirstNActive
-                    ? 'border-cyan-400/40 bg-[#080B10]/70 text-cyan-200 font-semibold'
-                    : 'border-slate-700/70 bg-[#080B10]/80 text-slate-200'
+                    ? 'border-cyan-400/50 bg-[#080B10]/80 text-cyan-100 font-semibold'
+                    : 'border-slate-600/80 bg-[#080B10]/80 text-slate-100'
                 }`}
               />
             </div>
@@ -357,9 +378,13 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                     onSetSelection(preset.numbers);
                     setSelectionNotice(false);
                   }}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  className={`rounded-md px-2.5 font-medium transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                    isMobileLayout ? 'py-1.5 text-xs font-semibold' : 'py-1 text-xs'
+                  } ${
                     isActive
-                      ? 'bg-cyan-400/15 text-cyan-300 border border-cyan-400/30'
+                      ? 'bg-cyan-400/20 text-cyan-200 border border-cyan-400/45'
+                      : isMobileLayout
+                      ? 'text-slate-200 hover:text-white hover:bg-[#1A2232] border border-transparent'
                       : 'text-slate-400 hover:text-slate-100 hover:bg-[#161D2A] border border-transparent'
                   }`}
                 >
@@ -376,44 +401,58 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               setSelectionNotice(false);
             }}
             disabled={selectedNumbers.size === 0}
-            className="rounded-lg border border-slate-800 bg-[#10151E] px-3 py-1.5 text-xs font-medium text-slate-300 hover:bg-[#161D2A] hover:text-slate-100 disabled:opacity-40 transition-colors whitespace-nowrap shrink-0"
+            className={`rounded-lg border px-3 text-xs font-semibold disabled:opacity-40 transition-colors whitespace-nowrap shrink-0 ${
+              isMobileLayout
+                ? 'border-slate-700 bg-[#121824] py-2 text-slate-100 hover:bg-[#1A2232]'
+                : 'border-slate-800 bg-[#10151E] py-1.5 text-slate-300 hover:bg-[#161D2A] hover:text-slate-100'
+            }`}
           >
             {t.table.clear}
           </button>
         </div>
       </div>
 
-      {/* Live Element Inspector + Selection Readiness Strip + Inline Flashcard Settings */}
-      <div
-        className={`flex flex-col gap-3 rounded-xl border border-slate-800/80 bg-[#10151E]/95 backdrop-blur-md shadow-lg shadow-black/30 ${
-          isMobileLayout ? 'px-3 py-2.5' : 'sticky top-16 z-20 px-4 py-3'
-        }`}
-      >
-        <div
-          className={`flex gap-3 min-h-[44px] ${
-            isMobileLayout ? 'flex-col' : 'flex-row items-center justify-between'
-          }`}
-        >
-          {inspectedElement && inspectedMeta ? (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 min-w-0">
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="font-mono text-xs text-slate-400 tabular-nums w-7">
+      {/* Live Element Description + Selection/Test Settings */}
+      {(() => {
+        const renderElementDescription = () =>
+          inspectedElement && inspectedMeta ? (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <span
+                  className={`font-mono tabular-nums ${
+                    isMobileLayout
+                      ? 'text-xs font-semibold text-cyan-300 w-7'
+                      : 'text-xs text-slate-400 w-7'
+                  }`}
+                >
                   #{inspectedElement.number}
                 </span>
-                <span className="font-display text-2xl font-bold text-slate-50 w-9">
+                <span
+                  className={`font-display font-bold ${
+                    isMobileLayout ? 'text-2xl text-white w-9' : 'text-xl lg:text-2xl text-slate-50 w-8'
+                  }`}
+                >
                   {inspectedElement.symbol}
                 </span>
-                <span className="text-base font-semibold text-slate-100">
+                <span
+                  className={`font-semibold ${
+                    isMobileLayout ? 'text-base text-white' : 'text-sm lg:text-base text-slate-100'
+                  }`}
+                >
                   {getElementName(inspectedElement, language)}
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
-                <span className="font-medium text-slate-200">
+              <div
+                className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 ${
+                  isMobileLayout ? 'text-xs text-slate-200' : 'text-xs text-slate-400'
+                }`}
+              >
+                <span className="font-semibold text-slate-100">
                   {m.labels[getMetallicType(inspectedElement.category)]}
                 </span>
                 <span aria-hidden="true">·</span>
-                <span className={inspectedMeta.accentText}>{inspectedCatLabel}</span>
+                <span className={`font-medium ${inspectedMeta.accentText}`}>{inspectedCatLabel}</span>
                 <span aria-hidden="true">·</span>
                 <span className="font-medium text-cyan-300">
                   {t.table.periodLabel(inspectedElement.period)} · {t.table.groupLabel(getCasGroupLabel(inspectedElement.group))}
@@ -425,37 +464,44 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 <span aria-hidden="true">·</span>
                 <span>{t.states[inspectedElement.state]}</span>
                 {language === 'en' && (
-                  <>
-                    <span aria-hidden="true" className="hidden 2xl:inline">·</span>
-                    <span className="hidden 2xl:inline text-slate-400 truncate max-w-sm">
+                  isMobileLayout ? (
+                    <p className="w-full text-[11px] text-slate-300 leading-snug truncate">
                       {inspectedElement.hint}
-                    </span>
-                  </>
+                    </p>
+                  ) : (
+                    <>
+                      <span aria-hidden="true" className="hidden 2xl:inline">·</span>
+                      <span className="hidden 2xl:inline text-slate-400 truncate max-w-sm">
+                        {inspectedElement.hint}
+                      </span>
+                    </>
+                  )
                 )}
               </div>
             </div>
           ) : (
-            <p className="text-xs text-slate-400">{t.table.hoverPrompt}</p>
-          )}
+            <p className={isMobileLayout ? 'text-sm text-slate-300' : 'text-xs text-slate-400'}>
+              {t.table.hoverPrompt}
+            </p>
+          );
 
+        const renderSelectionAndSettingsControls = () => (
           <div
-            className={`flex items-center gap-4 shrink-0 ${
-              isMobileLayout
-                ? 'justify-between border-t border-slate-800/70 pt-2.5'
-                : 'justify-end'
+            className={`flex items-center gap-3 shrink-0 ${
+              isMobileLayout ? 'justify-between w-full' : 'justify-end'
             }`}
           >
-            <div className="text-xs text-slate-300 tabular-nums">
-              <span className="font-mono font-semibold text-cyan-300">
+            <div className={`tabular-nums ${isMobileLayout ? 'text-[13px] font-medium text-slate-200' : 'text-xs text-slate-300'}`}>
+              <span className="font-mono font-bold text-cyan-300">
                 {selectedNumbers.size}
               </span>{' '}
-              <span className="text-slate-400">
+              <span className={isMobileLayout ? 'text-slate-200' : 'text-slate-400'}>
                 {selectedNumbers.size === 1
                   ? t.table.elementSelectedSingular
                   : t.table.elementsSelectedPlural}
               </span>
               {selectionNotice && selectedNumbers.size === 0 && (
-                <span className="ml-2 text-amber-400 font-medium">
+                <span className="ml-2 text-amber-300 font-semibold">
                   {t.table.selectAtLeastOne}
                 </span>
               )}
@@ -465,25 +511,29 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               type="button"
               onClick={() => setIsSettingsOpen((prev) => !prev)}
               aria-expanded={isSettingsOpen}
-              className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+              className={`inline-flex items-center gap-2 rounded-lg border text-xs font-semibold transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isMobileLayout ? 'px-3.5 py-2' : 'px-3 py-1.5'
+              } ${
                 isSettingsOpen
-                  ? 'border-cyan-400/60 bg-cyan-400/15 text-cyan-200'
+                  ? 'border-cyan-400/70 bg-cyan-400/20 text-cyan-100'
+                  : isMobileLayout
+                  ? 'border-cyan-400/45 bg-[#162233] text-white hover:border-cyan-300/70 hover:bg-[#1B2A3F]'
                   : 'border-slate-700/80 bg-[#161D2A] text-slate-100 hover:border-slate-600 hover:bg-slate-800'
               }`}
             >
               <SlidersHorizontal className="h-3.5 w-3.5 text-cyan-300 shrink-0" aria-hidden="true" />
               <span>{m.flashcardSettings}</span>
               <ChevronDown
-                className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-150 shrink-0 ${
+                className={`h-3.5 w-3.5 text-slate-300 transition-transform duration-150 shrink-0 ${
                   isSettingsOpen ? 'rotate-180' : ''
                 }`}
                 aria-hidden="true"
               />
             </button>
           </div>
-        </div>
+        );
 
-        {isSettingsOpen && (
+        const renderSettingsPanel = () => (
           <div
             role="region"
             aria-label={m.flashcardSettings}
@@ -491,7 +541,7 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
           >
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 max-w-full">
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] font-semibold text-slate-400 mr-0.5">
+                <span className={`font-semibold mr-0.5 ${isMobileLayout ? 'text-xs text-slate-200' : 'text-[11px] text-slate-400'}`}>
                   {m.testOnHeading}:
                 </span>
                 {getQuizSubjectOptions(t.flashcards.symbolToName, language).map((opt) => {
@@ -537,7 +587,7 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               </div>
 
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] font-semibold text-slate-400 mr-0.5">
+                <span className={`font-semibold mr-0.5 ${isMobileLayout ? 'text-xs text-slate-200' : 'text-[11px] text-slate-400'}`}>
                   {m.studyModeHeading}:
                 </span>
                 {(
@@ -582,21 +632,56 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               </button>
             </div>
           </div>
-        )}
-      </div>
+        );
+
+        if (isMobileLayout) {
+          return (
+            <>
+              {/* Non-sticky Selection & Test Settings Card above */}
+              <div className="flex flex-col gap-2.5 rounded-xl border border-slate-700/90 bg-[#121824] px-3 py-2.5">
+                {renderSelectionAndSettingsControls()}
+                {isSettingsOpen && renderSettingsPanel()}
+              </div>
+
+              {/* Sticky Element Description Only */}
+              <div className="sticky top-[94px] z-20 rounded-xl border border-slate-700/90 bg-[#121824]/95 px-3 py-2.5 backdrop-blur-md shadow-xl shadow-black/50">
+                {renderElementDescription()}
+              </div>
+            </>
+          );
+        }
+
+        return (
+          <div className="sticky top-14 z-20 flex flex-col gap-2.5 rounded-xl border border-slate-800/80 bg-[#10151E]/95 px-3.5 py-2 backdrop-blur-md shadow-lg shadow-black/30">
+            <div className="flex flex-row items-center justify-between gap-2.5 min-h-[38px]">
+              {renderElementDescription()}
+              {renderSelectionAndSettingsControls()}
+            </div>
+            {isSettingsOpen && renderSettingsPanel()}
+          </div>
+        );
+      })()}
 
       {/* 18-Column Periodic Table Stage */}
       <div
-        className={`rounded-xl border border-slate-800/80 bg-[#0B0F17] overflow-x-auto ${
-          isMobileLayout ? 'p-2' : 'p-4'
+        className={`rounded-xl border overflow-x-auto ${
+          isMobileLayout
+            ? 'border-slate-700/90 bg-[#0D131D] p-2.5'
+            : 'border-slate-800/80 bg-[#0B0F17] p-2.5 lg:p-3'
         }`}
       >
         <div
           dir="ltr"
-          className={`select-none grid gap-1 ${isMobileLayout ? 'min-w-[820px]' : 'min-w-[1000px]'}`}
+          className={`select-none grid ${
+            isMobileLayout ? 'min-w-[940px] gap-1.5' : 'w-full gap-[3px] lg:gap-1'
+          }`}
           style={{
-            gridTemplateColumns: '22px repeat(18, minmax(0, 1fr))',
-            gridTemplateRows: '34px repeat(7, minmax(0, 1fr)) 14px repeat(2, minmax(0, 1fr))',
+            gridTemplateColumns: isMobileLayout
+              ? '24px repeat(18, minmax(0, 1fr))'
+              : '20px repeat(18, minmax(0, 1fr))',
+            gridTemplateRows: isMobileLayout
+              ? '34px repeat(7, minmax(0, 1fr)) 14px repeat(2, minmax(0, 1fr))'
+              : '26px repeat(7, minmax(0, 1fr)) 10px repeat(2, minmax(0, 1fr))',
           }}
         >
           {/* Stepped Group Headers (IUPAC 1–18 above CAS A/B, placed right above each block's top element) */}
@@ -612,12 +697,26 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               <div
                 key={`grp-${grp}`}
                 style={{ gridRow: headerRow, gridColumn: grp + 1 }}
-                className={`flex flex-col items-center justify-end pb-1 font-mono text-[10px] leading-tight tabular-nums transition-colors ${
-                  isActiveGroup ? 'text-cyan-300 font-semibold' : 'text-slate-400'
+                className={`flex flex-col items-center justify-end pb-0.5 font-mono leading-tight tabular-nums transition-colors ${
+                  isMobileLayout ? 'text-[11px] font-semibold' : 'text-[9px] lg:text-[10px]'
+                } ${
+                  isActiveGroup
+                    ? 'text-cyan-300 font-semibold'
+                    : isMobileLayout
+                    ? 'text-slate-300'
+                    : 'text-slate-400'
                 }`}
               >
                 <span>{grp}</span>
-                <span className={isActiveGroup ? 'text-cyan-200' : 'text-slate-500'}>
+                <span
+                  className={
+                    isActiveGroup
+                      ? 'text-cyan-200'
+                      : isMobileLayout
+                      ? 'text-slate-400'
+                      : 'text-slate-500'
+                  }
+                >
                   {getCasGroupLabel(grp)}
                 </span>
               </div>
@@ -696,8 +795,14 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               <div
                 key={`per-${per}`}
                 style={{ gridRow: per + 1, gridColumn: 1 }}
-                className={`flex items-center justify-center font-mono text-[10px] tabular-nums transition-colors ${
-                  isActivePeriod ? 'text-cyan-300 font-semibold' : 'text-slate-500'
+                className={`flex items-center justify-center font-mono tabular-nums transition-colors ${
+                  isMobileLayout ? 'text-[11px] font-semibold' : 'text-[10px]'
+                } ${
+                  isActivePeriod
+                    ? 'text-cyan-300 font-semibold'
+                    : isMobileLayout
+                    ? 'text-slate-300'
+                    : 'text-slate-500'
                 }`}
               >
                 {per}
@@ -713,12 +818,16 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
             onMouseEnter={() => setHoveredCategory('lanthanide')}
             onMouseLeave={() => setHoveredCategory(null)}
             title={t.table.lanthanidesLabel}
-            className="flex flex-col items-center justify-center rounded-md border border-dashed border-cyan-800/60 bg-cyan-950/20 px-1 py-1.5 text-center transition-colors hover:border-cyan-400/80 hover:bg-cyan-950/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            className="flex flex-col items-center justify-center rounded-md border border-dashed border-cyan-700/70 bg-cyan-950/25 px-1 py-1 text-center transition-colors hover:border-cyan-400/80 hover:bg-cyan-950/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
           >
-            <span className="font-mono text-[10px] font-medium text-cyan-300 tabular-nums">
+            <span
+              className={`font-mono font-semibold text-cyan-300 tabular-nums ${
+                isMobileLayout ? 'text-[10px]' : 'text-[9px] lg:text-[10px]'
+              }`}
+            >
               57–71
             </span>
-            <span className="text-[9px] text-cyan-400/80 truncate max-w-full">
+            <span className="text-[9px] text-cyan-300/90 truncate max-w-full">
               La–Lu
             </span>
           </button>
@@ -730,12 +839,16 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
             onMouseEnter={() => setHoveredCategory('actinide')}
             onMouseLeave={() => setHoveredCategory(null)}
             title={t.table.actinidesLabel}
-            className="flex flex-col items-center justify-center rounded-md border border-dashed border-orange-800/60 bg-orange-950/20 px-1 py-1.5 text-center transition-colors hover:border-orange-400/80 hover:bg-orange-950/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            className="flex flex-col items-center justify-center rounded-md border border-dashed border-orange-700/70 bg-orange-950/25 px-1 py-1 text-center transition-colors hover:border-orange-400/80 hover:bg-orange-950/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
           >
-            <span className="font-mono text-[10px] font-medium text-orange-300 tabular-nums">
+            <span
+              className={`font-mono font-semibold text-orange-300 tabular-nums ${
+                isMobileLayout ? 'text-[10px]' : 'text-[9px] lg:text-[10px]'
+              }`}
+            >
               89–103
             </span>
-            <span className="text-[9px] text-orange-400/80 truncate max-w-full">
+            <span className="text-[9px] text-orange-300/90 truncate max-w-full">
               Ac–Lr
             </span>
           </button>
@@ -743,13 +856,17 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
           {/* Row Labels for Lanthanides & Actinides */}
           <div
             style={{ gridRow: 10, gridColumn: '2 / span 3' }}
-            className="flex items-center justify-end pr-2.5 text-[11px] font-medium text-slate-400"
+            className={`flex items-center justify-end pr-2.5 font-medium ${
+              isMobileLayout ? 'text-xs text-slate-200' : 'text-[10px] lg:text-[11px] text-slate-400'
+            }`}
           >
             {t.table.lanthanidesLabel}
           </div>
           <div
             style={{ gridRow: 11, gridColumn: '2 / span 3' }}
-            className="flex items-center justify-end pr-2.5 text-[11px] font-medium text-slate-400"
+            className={`flex items-center justify-end pr-2.5 font-medium ${
+              isMobileLayout ? 'text-xs text-slate-200' : 'text-[10px] lg:text-[11px] text-slate-400'
+            }`}
           >
             {t.table.actinidesLabel}
           </div>
@@ -788,11 +905,13 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 }}
                 aria-pressed={isSelected}
                 aria-label={`${localizedName}, ${el.symbol}, #${el.number}`}
-                className={`group relative flex flex-col justify-between rounded-md border p-1.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-                  isMobileLayout ? 'min-h-[46px]' : 'min-h-[54px]'
+                className={`group relative flex flex-col justify-between rounded-md border text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  isMobileLayout
+                    ? 'min-h-[58px] p-1.5'
+                    : 'min-h-[42px] xl:min-h-[48px] p-1 lg:p-1.5'
                 } ${
                   isSelected
-                    ? 'border-cyan-400 bg-cyan-500/20 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.4)]'
+                    ? 'border-cyan-400 bg-cyan-500/20 shadow-[inset_0_0_0_1px_rgba(34,211,238,0.45)]'
                     : `${meta.tileBg} ${meta.tileBorder} ${meta.tileHoverBorder} ${
                         isMetalloid
                           ? metalloidSpotlight
@@ -822,8 +941,14 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
 
                 <div className="flex items-start justify-between gap-0.5 w-full">
                   <span
-                    className={`font-mono text-[10px] leading-none tabular-nums ${
-                      isSelected ? 'text-cyan-200 font-semibold' : 'text-slate-400'
+                    className={`font-mono leading-none tabular-nums ${
+                      isMobileLayout ? 'text-[11px] font-semibold' : 'text-[9px] lg:text-[10px]'
+                    } ${
+                      isSelected
+                        ? 'text-cyan-200 font-semibold'
+                        : isMobileLayout
+                        ? 'text-slate-200'
+                        : 'text-slate-400'
                     }`}
                   >
                     {el.number}
@@ -842,7 +967,11 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
 
                 {/* Chemical Symbol — always universal IUPAC symbol */}
                 <span
-                  className={`font-display text-sm xl:text-base font-bold leading-tight tracking-tight ${
+                  className={`font-display font-bold leading-tight tracking-tight ${
+                    isMobileLayout
+                      ? 'text-base'
+                      : 'text-xs lg:text-sm xl:text-base'
+                  } ${
                     isSelected ? 'text-white' : meta.accentText
                   }`}
                 >
@@ -850,8 +979,16 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
                 </span>
 
                 <span
-                  className={`text-[9px] leading-none truncate w-full ${
-                    isSelected ? 'text-cyan-100' : 'text-slate-400 group-hover:text-slate-200'
+                  className={`leading-none truncate w-full ${
+                    isMobileLayout
+                      ? 'text-[10px] font-medium'
+                      : 'text-[8px] lg:text-[9px]'
+                  } ${
+                    isSelected
+                      ? 'text-cyan-100'
+                      : isMobileLayout
+                      ? 'text-slate-200'
+                      : 'text-slate-400 group-hover:text-slate-200'
                   }`}
                 >
                   {localizedName}
@@ -863,8 +1000,12 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
       </div>
 
       {/* Interactive Category Legend */}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
-        <span className="text-xs font-medium text-slate-400 mr-1">
+      <div className={`flex flex-wrap items-center ${isMobileLayout ? 'gap-2 pt-1' : 'gap-1.5 pt-0.5'}`}>
+        <span
+          className={`mr-1 ${
+            isMobileLayout ? 'text-[13px] font-semibold text-slate-200' : 'text-xs font-medium text-slate-400'
+          }`}
+        >
           {t.table.toggleFamily}
         </span>
         {(Object.keys(CATEGORY_META) as ElementCategory[]).map((catKey) => {
@@ -880,18 +1021,33 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
               onClick={() => handleCategoryClick(catKey)}
               onMouseEnter={() => setHoveredCategory(catKey)}
               onMouseLeave={() => setHoveredCategory(null)}
-              className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+              className={`inline-flex items-center gap-2 rounded-lg border transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                isMobileLayout
+                  ? 'px-3 py-1.5 text-xs font-medium'
+                  : 'px-2 py-1 text-[11px] lg:text-xs'
+              } ${
                 allSelected
-                  ? 'border-cyan-400/70 bg-cyan-950/40 text-cyan-200'
+                  ? 'border-cyan-400/75 bg-cyan-950/45 text-cyan-100'
                   : someSelected
-                  ? 'border-slate-700 bg-[#161D2A] text-slate-200'
+                  ? 'border-slate-600 bg-[#182130] text-slate-100'
+                  : isMobileLayout
+                  ? 'border-slate-700/90 bg-[#121824] text-slate-100 hover:border-slate-600'
                   : 'border-slate-800/80 bg-[#10151E] text-slate-300 hover:border-slate-700 hover:text-slate-100'
               }`}
             >
-              <span className={`h-2 w-2 rounded-xs ${meta.swatchBg} shrink-0`} aria-hidden="true" />
+              <span
+                className={`rounded-xs ${meta.swatchBg} shrink-0 ${
+                  isMobileLayout ? 'h-2.5 w-2.5' : 'h-2 w-2'
+                }`}
+                aria-hidden="true"
+              />
               <span>{t.categories[catKey].shortLabel}</span>
               {counts && (
-                <span className="font-mono text-[11px] text-slate-400 tabular-nums">
+                <span
+                  className={`font-mono tabular-nums ${
+                    isMobileLayout ? 'text-[11px] text-slate-300' : 'text-[11px] text-slate-400'
+                  }`}
+                >
                   {counts.selected}/{counts.total}
                 </span>
               )}
@@ -905,9 +1061,15 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
           onMouseEnter={() => setHoverMetalloids(true)}
           onMouseLeave={() => setHoverMetalloids(false)}
           aria-pressed={highlightMetalloids}
-          className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+          className={`inline-flex items-center gap-2 rounded-lg border transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+            isMobileLayout
+              ? 'px-3 py-1.5 text-xs font-medium'
+              : 'px-2 py-1 text-[11px] lg:text-xs'
+          } ${
             highlightMetalloids
-              ? 'border-teal-400/55 bg-teal-950/35 text-teal-200'
+              ? 'border-teal-400/65 bg-teal-950/40 text-teal-100'
+              : isMobileLayout
+              ? 'border-slate-700/90 bg-[#121824] text-slate-100 hover:border-slate-600'
               : 'border-slate-800/80 bg-[#10151E] text-slate-300 hover:border-slate-700 hover:text-slate-100'
           }`}
         >
@@ -921,13 +1083,19 @@ export const PeriodicTableView: React.FC<PeriodicTableViewProps> = ({
           onMouseEnter={() => setHighlightDividingLine(true)}
           onMouseLeave={() => setHighlightDividingLine(false)}
           aria-pressed={showDividingLine}
-          className={`inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+          className={`inline-flex items-center gap-2 rounded-lg border transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+            isMobileLayout
+              ? 'px-3 py-1.5 text-xs font-medium'
+              : 'px-2 py-1 text-[11px] lg:text-xs'
+          } ${
             showDividingLine
-              ? 'border-slate-700 bg-[#161D2A] text-slate-300'
+              ? 'border-slate-600 bg-[#161D2A] text-slate-200'
+              : isMobileLayout
+              ? 'border-slate-700/90 bg-[#121824] text-slate-300 hover:border-slate-600 hover:text-white'
               : 'border-slate-800/80 bg-[#10151E] text-slate-400 hover:border-slate-700 hover:text-slate-200'
           }`}
         >
-          <span className="h-0.5 w-3.5 bg-slate-400/70 shrink-0" aria-hidden="true" />
+          <span className="h-0.5 w-3.5 bg-slate-300/80 shrink-0" aria-hidden="true" />
           <span>{m.dividingLineLabel}</span>
         </button>
       </div>

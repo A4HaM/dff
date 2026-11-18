@@ -373,7 +373,7 @@ function scheduleTromboneNote(
 }
 
 /**
- * Plays a dramatic descending "sad trombone" extreme failure sound when quiz accuracy is <= 10%.
+ * Plays a dramatic descending "sad trombone" extreme failure sound when quiz accuracy is <= 25%.
  */
 export function playExtremeFailureSound(delaySeconds = 0): void {
   runWithAudio((ctx) => {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ElementIndexView } from './components/ElementIndexView';
 import { FlashcardSessionView } from './components/FlashcardSessionView';
 import { PeriodicTableView } from './components/PeriodicTableView';
@@ -62,6 +62,8 @@ export default function App() {
   const [testSubjects, setTestSubjects] = useState<QuizSubject[]>(['symbol', 'name']);
   const [quizMode, setQuizMode] = useState<QuizMode>('flip');
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(loadInitialLayoutMode);
+  const [emptySelectionNotice, setEmptySelectionNotice] = useState(false);
+  const noticeTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     try {
@@ -92,6 +94,20 @@ export default function App() {
       // Ignore storage write issues
     }
   }, [layoutMode]);
+
+  useEffect(() => {
+    if (selectedNumbers.size > 0) {
+      setEmptySelectionNotice(false);
+    }
+  }, [selectedNumbers.size]);
+
+  useEffect(() => {
+    return () => {
+      if (noticeTimerRef.current !== null) {
+        window.clearTimeout(noticeTimerRef.current);
+      }
+    };
+  }, []);
 
   const selectedElements = useMemo(
     () => ELEMENTS.filter((el) => selectedNumbers.has(el.number)),
@@ -127,7 +143,18 @@ export default function App() {
   }, []);
 
   const handleStartQuiz = useCallback(() => {
-    if (selectedNumbers.size > 0 && testSubjects.length >= 2) {
+    if (selectedNumbers.size === 0) {
+      setEmptySelectionNotice(true);
+      if (noticeTimerRef.current !== null) {
+        window.clearTimeout(noticeTimerRef.current);
+      }
+      noticeTimerRef.current = window.setTimeout(() => {
+        setEmptySelectionNotice(false);
+      }, 4000);
+      return;
+    }
+    setEmptySelectionNotice(false);
+    if (testSubjects.length >= 2) {
       playCardSwipeSound();
     }
     setActiveView('flashcards');
@@ -139,15 +166,15 @@ export default function App() {
     <div
       className={
         isMobileLayout
-          ? 'min-h-screen w-full bg-[#04060A] flex justify-center'
-          : 'min-h-screen w-full overflow-x-auto lg:overflow-x-clip bg-[#080B10] text-slate-100'
+          ? 'min-h-screen w-full bg-[#04060A] flex justify-center sm:py-2'
+          : 'min-h-screen w-full bg-[#080B10] text-slate-100'
       }
     >
       <div
         className={
           isMobileLayout
-            ? 'min-h-screen w-full max-w-[420px] flex flex-col bg-[#080B10] text-slate-100 border-x border-slate-800/80 shadow-2xl shadow-black/80 overflow-x-clip'
-            : 'min-h-screen min-w-[1040px] flex flex-col'
+            ? 'min-h-screen sm:min-h-[calc(100vh-16px)] w-full max-w-[440px] flex flex-col bg-[#080B10] text-slate-100 sm:rounded-2xl border-x sm:border border-slate-700/80 shadow-2xl shadow-black/90 ring-1 ring-white/5 overflow-x-clip'
+            : 'min-h-screen w-full flex flex-col'
         }
       >
         <TopBar
@@ -161,6 +188,8 @@ export default function App() {
           onToggleLayoutMode={() =>
             setLayoutMode((prev) => (prev === 'pc' ? 'mobile' : 'pc'))
           }
+          emptySelectionNotice={emptySelectionNotice}
+          onDismissEmptyNotice={() => setEmptySelectionNotice(false)}
         />
 
         <main className="flex-1">
